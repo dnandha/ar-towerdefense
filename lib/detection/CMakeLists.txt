@@ -7,6 +7,11 @@ find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 include_directories(include/)
 add_executable(DETECTION src/main.cpp src/cam.cpp src/image_processor.cpp)
 
-target_link_libraries (DETECTION ${OpenCV_LIBS} )
+target_link_libraries (DETECTION ${OpenCV_LIBS})
 target_link_libraries (DETECTION Eigen3::Eigen)
+
+enable_testing()
+
+add_executable(tester test/tester.cpp)
+add_test(Tester tester)
 
