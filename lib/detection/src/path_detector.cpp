@@ -1,13 +1,4 @@
 #include "path_detector.h"
-#include <iostream>
-#include <opencv2\opencv.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <stdint.h>
-using namespace cv;
-using namespace std;
-
 
 PathDetector::PathDetector()
 {
@@ -17,7 +8,6 @@ PathDetector::PathDetector(string frameName)
 {
 	frame = imread(frameName, 1);
 }
-
 
 PathDetector::~PathDetector()
 {

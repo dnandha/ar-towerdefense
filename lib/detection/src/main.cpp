@@ -24,8 +24,16 @@ int main()
     while (cam.Grab())
     {
         Mat image = cam.GetFrame();
-        Mat processed_image = improc.Process(image);
-        ShowImage(processed_image);
+        vector<Marker> markers = improc.DetectMarkers(image);
+
+        Mat markerImage = improc.DrawMarkers(image, markers);
+        ShowImage(markerImage);
+
+        // if (improc.ContainsBorderMarkers(markers))
+        // {
+        //     Mat warpedPaperImage = improc.WarpPaperImage(image, markers);
+        //     ShowImage(warpedPaperImage);
+        // }
     }
 
     return 1;
