@@ -10,6 +10,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/aruco.hpp>
 #include <opencv2/opencv.hpp>
+#include <algorithm>
 #include <Eigen/Dense>
 
 using namespace Eigen;
@@ -33,15 +34,37 @@ static vector<O> CastVector(vector<I> inputVector)
 }
 
 /*
+ * Aruco marker
+ */
+struct Marker
+{
+    int id;
+    vector<Point2f> corners;
+    Vec3d tvec;
+    Vec3d rvec;
+};
+
+/*
  * 
  */
 class ImageProcessor
 {
 public:
+    ImageProcessor();
+    vector<Marker> DetectMarkers(Mat image);
+    Mat DrawMarkers(Mat image, vector<Marker> markers);
+    bool ContainsBorderMarkers(vector<Marker> markers);
+    Mat WarpPaperImage(Mat image, vector<Marker> markers);
     Mat Process(Mat image);
 
 private:
-    vector<Point2f> CalcPaperBorders(vector<vector<Point2f>> corners);
+    Mat _camMatrix, _distCoeffs;
+    Ptr<aruco::Dictionary> _dictionary;
+    Ptr<aruco::DetectorParameters> _detectorParams;
+    float _markerLength;
+
+    vector<Point2f> CalcPaperBorders(vector<Marker> markers);
     vector<Point2i> Vertices2ConvexHull(vector<Point2f> vertices);
     Mat CutConvecHull(Mat image, vector<Point2f> vertices);
+    vector<Marker>::iterator GetMarkerIterator(vector<Marker> markers, int id);
 };
