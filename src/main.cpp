@@ -20,7 +20,8 @@ void initialize() {
  * Main
  */
 int main() {
-  _game.Run();
+  _game.Start();
+  _game.Loop();
 
   return 1;
 }

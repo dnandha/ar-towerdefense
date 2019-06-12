@@ -4,11 +4,15 @@
 /*
  * Example Implementation
  */
-void Game::Run() {
-  if (!this->_isRunning)
-    this->_isRunning = true;
+void Game::Start() {
+  if (_hasEnded || _isPaused) {
+    _hasEnded = false;
+    _isPaused = false;
+  }
+}
 
-  while (_isRunning) {
+void Game::Loop() {
+  while (!this->HasEnded()) {
     for (Unit& unit : this->GetUnits()) {
       if (unit.HasReachedEnd()) {
 	unit.DeSpawn();
@@ -27,4 +31,11 @@ void Game::Run() {
       }
     }
   }
+}
+
+std::list<Unit> Game::GetUnits() {
+  return std::list<Unit>();
+}
+
+void Game::EventReceived(EventType event) {
 }

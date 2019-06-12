@@ -49,7 +49,7 @@ enum EventType {
  */
 class EventListener {
   public:
-    virtual void EventReceived();
+    virtual void EventReceived(EventType event) {};
 };
 
 /*
@@ -60,7 +60,7 @@ class EventBus {
   public:
     EventBus() {}
     void Listen(EventListener listener) { _listeners.push_back(listener); }
-    void FireEvent(EventType event) { for (EventListener listener : _listeners) listener.EventReceived(); }
+    void FireEvent(EventType event) { for (EventListener listener : _listeners) listener.EventReceived(event); }
 };
 
 /*
@@ -208,14 +208,23 @@ class Game : EventListener {
   std::list<LevelData> _levels;
   Player* _player;
   int _phase;
-  bool _isRunning;
+  bool _hasEnded;
+  bool _isPaused;
 
   public:
     Game(Player* player) : _player(player), _phase(0) {}
     void GenerateLevels();
-    void Run();
-    void Pause();
-    void End();
+    //void Run() {_hasEnded = false; _isPaused = false;}
+    void Start();
+    void Loop();
+    void Pause() {_isPaused = true;}
+    void Resume() {_isPaused = false;}
+    void End() {_hasEnded = true; _isPaused = false;}
+
+    bool HasEnded() {return _hasEnded;}
+    bool IsPaused() {return _isPaused;}
+
+    void EventReceived(EventType event);
 
     std::list<Unit> GetUnits();
     std::list<Tower> GetTowers();
