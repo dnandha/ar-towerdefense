@@ -36,36 +36,44 @@ ImageProcessor::ImageProcessor()
 
 vector<Marker> ImageProcessor::DetectMarkers(Mat image)
 {
-
-    // marker ID's
-    vector<int> ids;
-    // lists of corners of detected markers (clockwise order)
-    vector<vector<Point2f>> corners, rejected;
-    // rotation and translation vectors respectively for each of the markers in corners
-    vector<Vec3d> rvecs, tvecs;
-
-    vector<Marker> markers;
-
-    // detect markers and estimate pose
-    aruco::detectMarkers(image, _dictionary, corners, ids, _detectorParams, rejected);
-    if (ids.size() > 0)
+    try
     {
-        aruco::estimatePoseSingleMarkers(corners, _markerLength, _camMatrix, _distCoeffs, rvecs,
-                                         tvecs);
+        // marker ID's
+        vector<int> ids;
+        // lists of corners of detected markers (clockwise order)
+        vector<vector<Point2f>> corners, rejected;
+        // rotation and translation vectors respectively for each of the markers in corners
+        vector<Vec3d> rvecs, tvecs;
 
-        for (int i = 0; i < ids.size(); i++)
+        vector<Marker> markers;
+
+        // detect markers and estimate pose
+        aruco::detectMarkers(image, _dictionary, corners, ids, _detectorParams, rejected);
+
+        if (ids.size() > 0)
         {
-            Marker marker;
-            marker.id = ids[i];
-            marker.corners = corners[i];
-            marker.tvec = tvecs[i];
-            marker.rvec = rvecs[i];
+            aruco::estimatePoseSingleMarkers(corners, _markerLength, _camMatrix, _distCoeffs, rvecs,
+                                             tvecs);
 
-            markers.push_back(marker);
+            for (int i = 0; i < ids.size(); i++)
+            {
+                Marker marker;
+                marker.id = ids[i];
+                marker.corners = corners[i];
+                marker.tvec = tvecs[i];
+                marker.rvec = rvecs[i];
+
+                markers.push_back(marker);
+            }
         }
-    }
 
-    return markers;
+        return markers;
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception:" << std::endl;
+        std::cout << e.what() << std::endl;
+    }
 }
 
 Mat ImageProcessor::DrawMarkers(Mat image, vector<Marker> markers)
@@ -95,10 +103,27 @@ Mat ImageProcessor::DrawMarkers(Mat image, vector<Marker> markers)
 
 bool ImageProcessor::ContainsBorderMarkers(vector<Marker> markers)
 {
-    vector<Marker>::iterator marker0It = GetMarkerIterator(markers, 0);
-    vector<Marker>::iterator marker1It = GetMarkerIterator(markers, 1);
+    if (markers.size() == 0)
+    {
+        return false;
+    }
 
-    if (marker0It != markers.end() && marker1It != markers.end())
+    bool marker0found = false;
+    bool marker1found = false;
+
+    for (auto const &marker : markers)
+    {
+        if (marker.id == 0)
+        {
+            marker0found = true;
+        }
+        if (marker.id == 1)
+        {
+            marker1found = true;
+        }
+    }
+
+    if (marker0found && marker1found)
     {
         return true;
     }
@@ -214,8 +239,7 @@ Mat ImageProcessor::CutConvecHull(Mat image, vector<Point2f> vertices)
 
 vector<Marker>::iterator ImageProcessor::GetMarkerIterator(vector<Marker> markers, int id)
 {
-    auto pred = [id](const Marker &item) {
+    return std::find_if(begin(markers), end(markers), [id](const Marker &item) {
         return item.id == id;
-    };
-    return std::find_if(markers.begin(), markers.end(), pred);
+    });
 }

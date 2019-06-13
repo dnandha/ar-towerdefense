@@ -1,4 +1,5 @@
 #define CATCH_CONFIG_MAIN
+
 #include "catch.hpp"
 
 #include "image_processor.h"
@@ -16,7 +17,7 @@ TEST_CASE("ImageProcessor detect marker 0", "[camtest]")
     SECTION("detect marker 0")
     {
         vector<Marker> markers = _improc.DetectMarkers(_image);
-        REQUIRE(markers.size() == 1);
+        REQUIRE(markers.size() > 0);
         REQUIRE(markers[0].id == 0);
     }
 }
