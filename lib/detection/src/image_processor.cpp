@@ -92,10 +92,13 @@ Mat ImageProcessor::DrawMarkers(Mat image, vector<Marker> markers)
             tvecs.push_back(markers[i].tvec);
         }
 
-        aruco::drawDetectedMarkers(image, corners, ids);
+        Mat imageCopy;
+        image.copyTo(imageCopy);
+
+        aruco::drawDetectedMarkers(imageCopy, corners, ids);
 
         for (unsigned int i = 0; i < ids.size(); i++)
-            aruco::drawAxis(image, _camMatrix, _distCoeffs, rvecs[i], tvecs[i],
+            aruco::drawAxis(imageCopy, _camMatrix, _distCoeffs, rvecs[i], tvecs[i],
                             _markerLength * 0.5f);
     }
     return image;
@@ -132,6 +135,9 @@ bool ImageProcessor::ContainsBorderMarkers(vector<Marker> markers)
 
 Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers)
 {
+    Mat imageCopy;
+    image.copyTo(imageCopy);
+
     vector<Point2f> paperBorders = CalcPaperBorders(markers);
 
     line(image, paperBorders[0], paperBorders[1], (0, 255, 0));
@@ -139,11 +145,11 @@ Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers)
     line(image, paperBorders[0], paperBorders[3], (0, 255, 0));
     line(image, paperBorders[2], paperBorders[3], (0, 255, 0));
 
-    vector<Marker>::iterator marker0It = GetMarkerIterator(markers, 0);
-    vector<Marker>::iterator marker1It = GetMarkerIterator(markers, 1);
+    Marker marker0 = GetMarkerForID(markers, 0);
+    Marker marker1 = GetMarkerForID(markers, 1);
 
-    Mat cuttedMarker0Image = CutConvecHull(image, marker0It->corners);
-    Mat cuttedMarker1Image = CutConvecHull(cuttedMarker0Image, marker1It->corners);
+    Mat cuttedMarker0Image = CutConvecHull(imageCopy, marker0.corners);
+    Mat cuttedMarker1Image = CutConvecHull(cuttedMarker0Image, marker1.corners);
 
     vector<Point2f> orgPaperBorders = CastVector<Point2i, Point2f>(Vertices2ConvexHull(paperBorders));
 
@@ -173,10 +179,10 @@ vector<Point2f> ImageProcessor::CalcPaperBorders(vector<Marker> markers)
         throw 20;
     }
 
-    vector<Marker>::iterator marker0It = GetMarkerIterator(markers, 0);
-    vector<Marker>::iterator marker1It = GetMarkerIterator(markers, 1);
-    vector<Point2f> m0c = marker0It->corners;
-    vector<Point2f> m1c = marker1It->corners;
+    Marker marker0 = GetMarkerForID(markers, 0);
+    Marker marker1 = GetMarkerForID(markers, 1);
+    vector<Point2f> m0c = marker0.corners;
+    vector<Point2f> m1c = marker1.corners;
 
     typedef Eigen::Hyperplane<float, 2> Line2; // Hyperplane in 2d is a line
     typedef Eigen::Vector2f Vec2;
@@ -237,9 +243,14 @@ Mat ImageProcessor::CutConvecHull(Mat image, vector<Point2f> vertices)
     return cutted_image;
 }
 
-vector<Marker>::iterator ImageProcessor::GetMarkerIterator(vector<Marker> markers, int id)
+Marker ImageProcessor::GetMarkerForID(vector<Marker> markers, int id)
 {
-    return std::find_if(begin(markers), end(markers), [id](const Marker &item) {
-        return item.id == id;
-    });
+    for (std::size_t i = 0; i != markers.size(); i++)
+    {
+        if (markers[i].id == id)
+        {
+            return markers[i];
+        }
+    }
+    throw out_of_range("Marker with id:" + to_string(id) + "is not in collection.");
 }

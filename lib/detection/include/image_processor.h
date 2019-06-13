@@ -55,7 +55,7 @@ public:
     Mat DrawMarkers(Mat image, vector<Marker> markers);
     bool ContainsBorderMarkers(vector<Marker> markers);
     Mat WarpPaperImage(Mat image, vector<Marker> markers);
-    Mat Process(Mat image);
+    Marker GetMarkerForID(vector<Marker> markers, int id);
 
 private:
     Mat _camMatrix, _distCoeffs;
@@ -66,5 +66,4 @@ private:
     vector<Point2f> CalcPaperBorders(vector<Marker> markers);
     vector<Point2i> Vertices2ConvexHull(vector<Point2f> vertices);
     Mat CutConvecHull(Mat image, vector<Point2f> vertices);
-    vector<Marker>::iterator GetMarkerIterator(vector<Marker> markers, int id);
 };
