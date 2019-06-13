@@ -8,5 +8,6 @@ add_subdirectory(test)
 
 enable_testing()
 add_test (NAME CamTest COMMAND test_cam)
+add_test (NAME ImprocTest COMMAND test_improc)
 
 include_directories(include/)

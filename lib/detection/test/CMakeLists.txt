@@ -1,3 +1,5 @@
 include_directories(${detection_SOURCE_DIR}/include)
 add_executable(test_cam test_cam.cpp)
 target_link_libraries(test_cam detection)
+add_executable(test_improc test_image_processor.cpp)
+target_link_libraries(test_improc detection)
