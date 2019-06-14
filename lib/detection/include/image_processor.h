@@ -71,7 +71,7 @@ public:
     vector<Marker> DetectMarkers(Mat image);
     Mat DrawMarkers(Mat image, vector<Marker> markers);
     bool ContainsBorderMarkers(vector<Marker> markers);
-    Mat WarpPaperImage(Mat image, vector<Marker> markers);
+    Mat WarpPaperImage(Mat image, vector<Marker> markers, int warpedImageWidth, int warpedImageHeight);
     Marker GetMarkerOfCategory(vector<Marker> markers, MarkerCategory category);
 
 private:

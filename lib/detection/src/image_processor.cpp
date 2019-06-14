@@ -29,7 +29,7 @@ ImageProcessor::ImageProcessor()
     // using standard detector parametes
     _detectorParams = aruco::DetectorParameters::create();
     // Corner refinement method (0: None, 1: Subpixel, 2:contour, 3: AprilTag 2)
-    _detectorParams->cornerRefinementMethod = 1;
+    _detectorParams->cornerRefinementMethod = 2;
 
     _markerLength = 2.6;
 }
@@ -134,17 +134,12 @@ bool ImageProcessor::ContainsBorderMarkers(vector<Marker> markers)
     return false;
 }
 
-Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers)
+Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers, int warpedImageWidth, int warpedImageHeight)
 {
     Mat imageCopy;
     image.copyTo(imageCopy);
 
     vector<Point2f> paperBorders = CalcPaperBorders(markers);
-
-    line(image, paperBorders[0], paperBorders[1], (0, 255, 0));
-    line(image, paperBorders[1], paperBorders[2], (0, 255, 0));
-    line(image, paperBorders[0], paperBorders[3], (0, 255, 0));
-    line(image, paperBorders[2], paperBorders[3], (0, 255, 0));
 
     Marker marker0 = GetMarkerOfCategory(markers, Border0);
     Marker marker1 = GetMarkerOfCategory(markers, Border1);
@@ -154,6 +149,7 @@ Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers)
 
     vector<Point2f> orgPaperBorders = CastVector<Point2i, Point2f>(Vertices2ConvexHull(paperBorders));
 
+    // sorting paper borders
     sort(orgPaperBorders.begin(), orgPaperBorders.end(), mySortY);
     sort(orgPaperBorders.begin(), orgPaperBorders.begin() + 2, mySortX);
     sort(orgPaperBorders.begin() + 2, orgPaperBorders.end(), mySortX);
@@ -161,9 +157,9 @@ Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers)
     vector<Point2f> destPaperBorders;
 
     destPaperBorders.push_back(Point2i(0, 0));
-    destPaperBorders.push_back(Point2i(900, 0));
-    destPaperBorders.push_back(Point2i(0, 600));
-    destPaperBorders.push_back(Point2i(900, 600));
+    destPaperBorders.push_back(Point2i(warpedImageWidth, 0));
+    destPaperBorders.push_back(Point2i(0, warpedImageHeight));
+    destPaperBorders.push_back(Point2i(warpedImageWidth, warpedImageHeight));
 
     Mat perspectiveMat = getPerspectiveTransform(orgPaperBorders, destPaperBorders);
 
