@@ -58,7 +58,7 @@ vector<Marker> ImageProcessor::DetectMarkers(Mat image)
             for (int i = 0; i < ids.size(); i++)
             {
                 Marker marker;
-                marker.id = ids[i];
+                marker.category = static_cast<MarkerCategory>(ids[i]);
                 marker.corners = corners[i];
                 marker.tvec = tvecs[i];
                 marker.rvec = rvecs[i];
@@ -86,7 +86,7 @@ Mat ImageProcessor::DrawMarkers(Mat image, vector<Marker> markers)
 
         for (int i = 0; i < markers.size(); i++)
         {
-            ids.push_back(markers[i].id);
+            ids.push_back((int)markers[i].category);
             corners.push_back(markers[i].corners);
             rvecs.push_back(markers[i].rvec);
             tvecs.push_back(markers[i].tvec);
@@ -100,6 +100,7 @@ Mat ImageProcessor::DrawMarkers(Mat image, vector<Marker> markers)
         for (unsigned int i = 0; i < ids.size(); i++)
             aruco::drawAxis(imageCopy, _camMatrix, _distCoeffs, rvecs[i], tvecs[i],
                             _markerLength * 0.5f);
+        return imageCopy;
     }
     return image;
 }
@@ -116,11 +117,11 @@ bool ImageProcessor::ContainsBorderMarkers(vector<Marker> markers)
 
     for (auto const &marker : markers)
     {
-        if (marker.id == 0)
+        if (marker.category == Border0)
         {
             marker0found = true;
         }
-        if (marker.id == 1)
+        if (marker.category == Border1)
         {
             marker1found = true;
         }
@@ -145,8 +146,8 @@ Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers)
     line(image, paperBorders[0], paperBorders[3], (0, 255, 0));
     line(image, paperBorders[2], paperBorders[3], (0, 255, 0));
 
-    Marker marker0 = GetMarkerForID(markers, 0);
-    Marker marker1 = GetMarkerForID(markers, 1);
+    Marker marker0 = GetMarkerOfCategory(markers, Border0);
+    Marker marker1 = GetMarkerOfCategory(markers, Border1);
 
     Mat cuttedMarker0Image = CutConvecHull(imageCopy, marker0.corners);
     Mat cuttedMarker1Image = CutConvecHull(cuttedMarker0Image, marker1.corners);
@@ -179,8 +180,8 @@ vector<Point2f> ImageProcessor::CalcPaperBorders(vector<Marker> markers)
         throw 20;
     }
 
-    Marker marker0 = GetMarkerForID(markers, 0);
-    Marker marker1 = GetMarkerForID(markers, 1);
+    Marker marker0 = GetMarkerOfCategory(markers, Border0);
+    Marker marker1 = GetMarkerOfCategory(markers, Border1);
     vector<Point2f> m0c = marker0.corners;
     vector<Point2f> m1c = marker1.corners;
 
@@ -243,14 +244,14 @@ Mat ImageProcessor::CutConvecHull(Mat image, vector<Point2f> vertices)
     return cutted_image;
 }
 
-Marker ImageProcessor::GetMarkerForID(vector<Marker> markers, int id)
+Marker ImageProcessor::GetMarkerOfCategory(vector<Marker> markers, MarkerCategory category)
 {
     for (std::size_t i = 0; i != markers.size(); i++)
     {
-        if (markers[i].id == id)
+        if (markers[i].category == category)
         {
             return markers[i];
         }
     }
-    throw out_of_range("Marker with id:" + to_string(id) + "is not in collection.");
+    throw out_of_range("Marker with id:" + to_string((int)category) + "is not in collection.");
 }
