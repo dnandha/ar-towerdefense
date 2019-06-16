@@ -29,43 +29,51 @@ ImageProcessor::ImageProcessor()
     // using standard detector parametes
     _detectorParams = aruco::DetectorParameters::create();
     // Corner refinement method (0: None, 1: Subpixel, 2:contour, 3: AprilTag 2)
-    _detectorParams->cornerRefinementMethod = 1;
+    _detectorParams->cornerRefinementMethod = 2;
 
     _markerLength = 2.6;
 }
 
 vector<Marker> ImageProcessor::DetectMarkers(Mat image)
 {
-
-    // marker ID's
-    vector<int> ids;
-    // lists of corners of detected markers (clockwise order)
-    vector<vector<Point2f>> corners, rejected;
-    // rotation and translation vectors respectively for each of the markers in corners
-    vector<Vec3d> rvecs, tvecs;
-
-    vector<Marker> markers;
-
-    // detect markers and estimate pose
-    aruco::detectMarkers(image, _dictionary, corners, ids, _detectorParams, rejected);
-    if (ids.size() > 0)
+    try
     {
-        aruco::estimatePoseSingleMarkers(corners, _markerLength, _camMatrix, _distCoeffs, rvecs,
-                                         tvecs);
+        // marker ID's
+        vector<int> ids;
+        // lists of corners of detected markers (clockwise order)
+        vector<vector<Point2f>> corners, rejected;
+        // rotation and translation vectors respectively for each of the markers in corners
+        vector<Vec3d> rvecs, tvecs;
 
-        for (int i = 0; i < ids.size(); i++)
+        vector<Marker> markers;
+
+        // detect markers and estimate pose
+        aruco::detectMarkers(image, _dictionary, corners, ids, _detectorParams, rejected);
+
+        if (ids.size() > 0)
         {
-            Marker marker;
-            marker.id = ids[i];
-            marker.corners = corners[i];
-            marker.tvec = tvecs[i];
-            marker.rvec = rvecs[i];
+            aruco::estimatePoseSingleMarkers(corners, _markerLength, _camMatrix, _distCoeffs, rvecs,
+                                             tvecs);
 
-            markers.push_back(marker);
+            for (int i = 0; i < ids.size(); i++)
+            {
+                Marker marker;
+                marker.category = static_cast<MarkerCategory>(ids[i]);
+                marker.corners = corners[i];
+                marker.tvec = tvecs[i];
+                marker.rvec = rvecs[i];
+
+                markers.push_back(marker);
+            }
         }
-    }
 
-    return markers;
+        return markers;
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception:" << std::endl;
+        std::cout << e.what() << std::endl;
+    }
 }
 
 Mat ImageProcessor::DrawMarkers(Mat image, vector<Marker> markers)
@@ -78,50 +86,70 @@ Mat ImageProcessor::DrawMarkers(Mat image, vector<Marker> markers)
 
         for (int i = 0; i < markers.size(); i++)
         {
-            ids.push_back(markers[i].id);
+            ids.push_back((int)markers[i].category);
             corners.push_back(markers[i].corners);
             rvecs.push_back(markers[i].rvec);
             tvecs.push_back(markers[i].tvec);
         }
 
-        aruco::drawDetectedMarkers(image, corners, ids);
+        Mat imageCopy;
+        image.copyTo(imageCopy);
+
+        aruco::drawDetectedMarkers(imageCopy, corners, ids);
 
         for (unsigned int i = 0; i < ids.size(); i++)
-            aruco::drawAxis(image, _camMatrix, _distCoeffs, rvecs[i], tvecs[i],
+            aruco::drawAxis(imageCopy, _camMatrix, _distCoeffs, rvecs[i], tvecs[i],
                             _markerLength * 0.5f);
+        return imageCopy;
     }
     return image;
 }
 
 bool ImageProcessor::ContainsBorderMarkers(vector<Marker> markers)
 {
-    vector<Marker>::iterator marker0It = GetMarkerIterator(markers, 0);
-    vector<Marker>::iterator marker1It = GetMarkerIterator(markers, 1);
+    if (markers.size() == 0)
+    {
+        return false;
+    }
 
-    if (marker0It != markers.end() && marker1It != markers.end())
+    bool marker0found = false;
+    bool marker1found = false;
+
+    for (auto const &marker : markers)
+    {
+        if (marker.category == Border0)
+        {
+            marker0found = true;
+        }
+        if (marker.category == Border1)
+        {
+            marker1found = true;
+        }
+    }
+
+    if (marker0found && marker1found)
     {
         return true;
     }
     return false;
 }
 
-Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers)
+Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers, int warpedImageWidth, int warpedImageHeight)
 {
+    Mat imageCopy;
+    image.copyTo(imageCopy);
+
     vector<Point2f> paperBorders = CalcPaperBorders(markers);
 
-    line(image, paperBorders[0], paperBorders[1], (0, 255, 0));
-    line(image, paperBorders[1], paperBorders[2], (0, 255, 0));
-    line(image, paperBorders[0], paperBorders[3], (0, 255, 0));
-    line(image, paperBorders[2], paperBorders[3], (0, 255, 0));
+    Marker marker0 = GetMarkerOfCategory(markers, Border0);
+    Marker marker1 = GetMarkerOfCategory(markers, Border1);
 
-    vector<Marker>::iterator marker0It = GetMarkerIterator(markers, 0);
-    vector<Marker>::iterator marker1It = GetMarkerIterator(markers, 1);
-
-    Mat cuttedMarker0Image = CutConvecHull(image, marker0It->corners);
-    Mat cuttedMarker1Image = CutConvecHull(cuttedMarker0Image, marker1It->corners);
+    Mat cuttedMarker0Image = CutConvecHull(imageCopy, marker0.corners);
+    Mat cuttedMarker1Image = CutConvecHull(cuttedMarker0Image, marker1.corners);
 
     vector<Point2f> orgPaperBorders = CastVector<Point2i, Point2f>(Vertices2ConvexHull(paperBorders));
 
+    // sorting paper borders
     sort(orgPaperBorders.begin(), orgPaperBorders.end(), mySortY);
     sort(orgPaperBorders.begin(), orgPaperBorders.begin() + 2, mySortX);
     sort(orgPaperBorders.begin() + 2, orgPaperBorders.end(), mySortX);
@@ -129,9 +157,9 @@ Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers)
     vector<Point2f> destPaperBorders;
 
     destPaperBorders.push_back(Point2i(0, 0));
-    destPaperBorders.push_back(Point2i(900, 0));
-    destPaperBorders.push_back(Point2i(0, 600));
-    destPaperBorders.push_back(Point2i(900, 600));
+    destPaperBorders.push_back(Point2i(warpedImageWidth, 0));
+    destPaperBorders.push_back(Point2i(0, warpedImageHeight));
+    destPaperBorders.push_back(Point2i(warpedImageWidth, warpedImageHeight));
 
     Mat perspectiveMat = getPerspectiveTransform(orgPaperBorders, destPaperBorders);
 
@@ -148,10 +176,10 @@ vector<Point2f> ImageProcessor::CalcPaperBorders(vector<Marker> markers)
         throw 20;
     }
 
-    vector<Marker>::iterator marker0It = GetMarkerIterator(markers, 0);
-    vector<Marker>::iterator marker1It = GetMarkerIterator(markers, 1);
-    vector<Point2f> m0c = marker0It->corners;
-    vector<Point2f> m1c = marker1It->corners;
+    Marker marker0 = GetMarkerOfCategory(markers, Border0);
+    Marker marker1 = GetMarkerOfCategory(markers, Border1);
+    vector<Point2f> m0c = marker0.corners;
+    vector<Point2f> m1c = marker1.corners;
 
     typedef Eigen::Hyperplane<float, 2> Line2; // Hyperplane in 2d is a line
     typedef Eigen::Vector2f Vec2;
@@ -212,10 +240,14 @@ Mat ImageProcessor::CutConvecHull(Mat image, vector<Point2f> vertices)
     return cutted_image;
 }
 
-vector<Marker>::iterator ImageProcessor::GetMarkerIterator(vector<Marker> markers, int id)
+Marker ImageProcessor::GetMarkerOfCategory(vector<Marker> markers, MarkerCategory category)
 {
-    auto pred = [id](const Marker &item) {
-        return item.id == id;
-    };
-    return std::find_if(markers.begin(), markers.end(), pred);
+    for (std::size_t i = 0; i != markers.size(); i++)
+    {
+        if (markers[i].category == category)
+        {
+            return markers[i];
+        }
+    }
+    throw out_of_range("Marker with id:" + to_string((int)category) + "is not in collection.");
 }

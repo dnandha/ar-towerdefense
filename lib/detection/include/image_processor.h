@@ -34,11 +34,28 @@ static vector<O> CastVector(vector<I> inputVector)
 }
 
 /*
+ * Enum for Marker IDs
+ */
+enum MarkerCategory
+{
+    Border0 = 0,
+    Border1 = 1,
+    Start = 2,
+    Pause = 3,
+    Build = 4,
+    Destroy = 5,
+    Tower0 = 6,
+    Tower1 = 7,
+    Tower2 = 8,
+    Tower3 = 9
+};
+
+/*
  * Aruco marker
  */
 struct Marker
 {
-    int id;
+    MarkerCategory category;
     vector<Point2f> corners;
     Vec3d tvec;
     Vec3d rvec;
@@ -54,8 +71,8 @@ public:
     vector<Marker> DetectMarkers(Mat image);
     Mat DrawMarkers(Mat image, vector<Marker> markers);
     bool ContainsBorderMarkers(vector<Marker> markers);
-    Mat WarpPaperImage(Mat image, vector<Marker> markers);
-    Mat Process(Mat image);
+    Mat WarpPaperImage(Mat image, vector<Marker> markers, int warpedImageWidth, int warpedImageHeight);
+    Marker GetMarkerOfCategory(vector<Marker> markers, MarkerCategory category);
 
 private:
     Mat _camMatrix, _distCoeffs;
@@ -66,5 +83,4 @@ private:
     vector<Point2f> CalcPaperBorders(vector<Marker> markers);
     vector<Point2i> Vertices2ConvexHull(vector<Point2f> vertices);
     Mat CutConvecHull(Mat image, vector<Point2f> vertices);
-    vector<Marker>::iterator GetMarkerIterator(vector<Marker> markers, int id);
 };

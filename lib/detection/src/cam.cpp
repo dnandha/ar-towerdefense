@@ -13,24 +13,24 @@ Cam::Cam(int camId)
     std::cout << "Setting cam parameters...\n";
 
     std::cout << "\t[PARAM_FRAME_WIDTH] ";
-    if (!_cap.set(CAP_PROP_FRAME_WIDTH, 640))
-    {
-        std::cout << "SUCCESS\n";
-    }
-    else
-    {
-        std::cout << "FAIL\n";
-    }
+    // if (!_cap.set(CAP_PROP_FRAME_WIDTH, 1280))
+    // {
+    //     std::cout << "SUCCESS\n";
+    // }
+    // else
+    // {
+    //     std::cout << "FAIL\n";
+    // }
 
-    std::cout << "\t[PARAM_FRAME_HEIGHT] ";
-    if (!_cap.set(CAP_PROP_FRAME_HEIGHT, 480))
-    {
-        std::cout << "SUCCESS\n";
-    }
-    else
-    {
-        std::cout << "FAIL\n";
-    }
+    // std::cout << "\t[PARAM_FRAME_HEIGHT] ";
+    // if (!_cap.set(CAP_PROP_FRAME_HEIGHT, 960))
+    // {
+    //     std::cout << "SUCCESS\n";
+    // }
+    // else
+    // {
+    //     std::cout << "FAIL\n";
+    // }
 
     std::cout << "\t[PARAM_FPS] ";
     if (!_cap.set(CAP_PROP_FPS, 15))

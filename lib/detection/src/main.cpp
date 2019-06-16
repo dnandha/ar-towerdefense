@@ -1,18 +1,6 @@
 #include "cam.h"
 #include "image_processor.h"
 
-static void ShowImage(Mat image)
-{
-    if (image.empty())
-    {
-        cout << "Image empty!!";
-    }
-    else
-    {
-        imshow("out", image);
-    }
-}
-
 /*
  * Main
  */
@@ -28,12 +16,12 @@ int main()
         vector<Marker> markers = improc.DetectMarkers(image);
 
         Mat markerImage = improc.DrawMarkers(image, markers);
-        ShowImage(markerImage);
+        imshow("marker image", markerImage);
 
         if (improc.ContainsBorderMarkers(markers))
         {
-            Mat warpedPaperImage = improc.WarpPaperImage(image, markers);
-            ShowImage(warpedPaperImage);
+            Mat warpedPaperImage = improc.WarpPaperImage(image, markers, 900, 600);
+            imshow("warped image", warpedPaperImage);
         }
     }
 
