@@ -27,21 +27,10 @@ class Player {
 };
 
 /*
- * Level
- */
-class LevelData {
-  std::list<GameEntity> _gameEntities;
-
-  public:
-    void Save(const char* filename);
-    void Load(const char* filename);
-};
-
-/*
  * Put it all together
  */
 class Game : EventListener {
-  std::list<LevelData> _levels;
+  std::list<Scene> _scenes;
   Player* _player;
   int _phase;
   bool _hasEnded;
