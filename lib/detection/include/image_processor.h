@@ -69,6 +69,7 @@ class ImageProcessor
 public:
     ImageProcessor();
     vector<Marker> DetectMarkers(Mat image);
+    Mat GetDistCoeffs();
     Mat DrawMarkers(Mat image, vector<Marker> markers);
     bool ContainsBorderMarkers(vector<Marker> markers);
     Mat WarpPaperImage(Mat image, vector<Marker> markers, int warpedImageWidth, int warpedImageHeight);

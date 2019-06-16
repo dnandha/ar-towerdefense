@@ -34,6 +34,11 @@ ImageProcessor::ImageProcessor()
     _markerLength = 2.6;
 }
 
+Mat ImageProcessor::GetDistCoeffs()
+{
+    return _distCoeffs;
+}
+
 vector<Marker> ImageProcessor::DetectMarkers(Mat image)
 {
     try
