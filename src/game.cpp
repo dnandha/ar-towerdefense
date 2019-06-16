@@ -15,7 +15,7 @@ void Game::Loop() {
   while (!this->HasEnded()) {
     for (Unit& unit : this->GetUnits()) {
       if (unit.HasReachedEnd()) {
-	unit.DeSpawn();
+	unit.Kill();
 	this->_player->TakeHit();
       } else {
 	unit.Walk();
@@ -23,7 +23,7 @@ void Game::Loop() {
 	  if (tower.Hits(unit)) {
 	    unit.TakeDamage(tower.GetDamage());
 	    if (unit.IsDead()) { 
-	      unit.DeSpawn();
+	      unit.Kill();
 	      this->_player->ScorePlus();
 	    }
 	  }
@@ -37,5 +37,5 @@ std::list<Unit> Game::GetUnits() {
   return std::list<Unit>();
 }
 
-void Game::EventReceived(EventType event) {
+void Game::HandleEvent(EventType event) {
 }

@@ -1,171 +1,10 @@
-/*
- *
- *
- *
- *
- *
- *
- */
+#ifndef _GAME_H
+#define _GAME_H
+
 #include <list>
 
-/*
- * 3d position
- */
-struct Position {
-  float x;
-  float y;
-  float z;
-
-  Position(float x,float y,float z) : x(x), y(y), z(z) {}
-};
-
-/*
- * Holds mesh data
- */
-class MeshEntity {
-  // todo
-  public:
-    MeshEntity();
-    void Load(const char* filename);
-};
-
-/*
- * todo: alternative to "Interface"
- */
-enum EventType {
-  MarkerPlaceTower1,
-  MarkerBuildTower,
-  MarkerDestroyTower,
-  MarkerStartGame,
-  MarkerPauseGame,
-  NavMeshLoaded,
-  NavStartDefined,
-  NavEndDefined,
-  NavRouteFound
-};
-
-/*
- *
- */
-class EventListener {
-  public:
-    virtual void EventReceived(EventType event) {};
-};
-
-/*
- *
- */
-class EventBus {
-  std::list<EventListener> _listeners;
-  public:
-    EventBus() {}
-    void Listen(EventListener listener) { _listeners.push_back(listener); }
-    void FireEvent(EventType event) { for (EventListener listener : _listeners) listener.EventReceived(event); }
-};
-
-/*
- * Computer vision component
- */
-class CV {
-  // todo
-};
-
-/*
- *
- */
-class MarkerDetection {
-  public:
-    MarkerDetection(CV* cv, EventBus bus);
-};
-
-/*
- * Holds some sort of path finding logic
- */
-class PathFinding {
-  public:
-    PathFinding(CV* cv, EventBus bus);
-};
-
-/*
- * Abstract object which represents game entity
- */
-class GameObject {
-  int _id;
-  Position _pos;
-  MeshEntity* _mesh;
-  const char* _name;
-
-  public:
-    GameObject(int id, const char* name, MeshEntity* mesh) :
-      _id(id), _name(name), _mesh(mesh), _pos(0,0,0) {}
-
-    virtual void Spawn(Position spawnPos); // override in derived class
-    virtual void DeSpawn(); // override in derived class
-};
-
-/*
- * Enemy unit
- */
-class Unit : GameObject {
-  PathFinding* _pf;
-
-  float _damagetaken;
-  float _hitpoints;
-
-  public:
-    Unit(int id, const char* name, int hp, MeshEntity* mesh, PathFinding* pf) : 
-      GameObject(id, name, mesh), _hitpoints(hp), _damagetaken(.0f), _pf(pf) {}
-
-    void Spawn(Position spawnPos);
-    void DeSpawn();
-
-    void Walk(); // pf contains walking instructions
-    void Stop();
-    //void LookAt(Position lookAt);
-    //
-    bool HasReachedEnd();
-
-    void TakeDamage(int dmg);
-    bool IsDead() { return _damagetaken >= _hitpoints; }
-};
-
-/*
- * Describes tower game objects
- */
-class Tower : GameObject { 
-  int _type;
-  float _damage;
-  float _range;
-  float _fov;
-  
-  public:
-    void Spawn(); // build
-    void DeSpawn(); // destruct
-
-    bool Hits(Unit unit);
-
-    float GetDamage() { return _damage; }
-};
-
-/*
- * Level
- */
-class LevelData {
-  std::list<GameObject> _gameobjects;
-
-  public:
-    void Load(const char* filename);
-};
-
-/*
- * Rendering backend / engine
- */
-class Scene {
-  std::list<MeshEntity> _meshes;
-  public:
-    void AddMesh(MeshEntity mesh);
-    void Render();
-};
+#include "common.h"
+#include "entities.h"
 
 /*
  * Track player statistics
@@ -188,17 +27,14 @@ class Player {
 };
 
 /*
- * User interaction
+ * Level
  */
-class Interface {
+class LevelData {
+  std::list<GameEntity> _gameEntities;
+
   public:
-    Interface() {}
-    Tower PlaceTower(int id);
-    void BuildTower(Tower tower);
-    void DestructTower(Tower tower);
-    void StartGame();
-    void PauseGame();
-    void EndGame();
+    void Save(const char* filename);
+    void Load(const char* filename);
 };
 
 /*
@@ -224,18 +60,10 @@ class Game : EventListener {
     bool HasEnded() {return _hasEnded;}
     bool IsPaused() {return _isPaused;}
 
-    void EventReceived(EventType event);
+    void HandleEvent(EventType event);
 
     std::list<Unit> GetUnits();
     std::list<Tower> GetTowers();
 };
 
-/*
- * Defines and checks game rules
-class Rules {
-  Game* _game;
-
-  public:
-    Rules(Game* game) : _game(game) {}
-    void Check() { if (true) _game->DenyAction(); }
-*/
+#endif
