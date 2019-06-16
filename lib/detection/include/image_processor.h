@@ -1,3 +1,6 @@
+#ifndef _IMAGE_PROCESSOR_H
+#define _IMAGE_PROCESSOR_H
+
 /*
  *
  *
@@ -85,3 +88,5 @@ private:
     vector<Point2i> Vertices2ConvexHull(vector<Point2f> vertices);
     Mat CutConvecHull(Mat image, vector<Point2f> vertices);
 };
+
+#endif

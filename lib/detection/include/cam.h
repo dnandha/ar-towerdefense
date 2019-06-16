@@ -1,3 +1,6 @@
+#ifndef _CAM_H
+#define _CAM_H
+
 /*
  *
  *
@@ -26,3 +29,5 @@ public:
     bool Grab();
     Mat GetFrame();
 };
+
+#endif

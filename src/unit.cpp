@@ -1,8 +1,10 @@
 #include "game.h"
 
-void Unit::Walk() {
+void Unit::Walk()
+{
 }
 
-bool Unit::HasReachedEnd() {
+bool Unit::HasReachedEnd()
+{
   return false;
 }

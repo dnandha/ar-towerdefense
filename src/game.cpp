@@ -1,6 +1,5 @@
 #include "game.h"
 
-
 /*
  * Example Implementation
  */
@@ -35,7 +34,4 @@ void Game::Loop() {
 
 std::list<Unit> Game::GetUnits() {
   return std::list<Unit>();
-}
-
-void Game::HandleEvent(EventType event) {
 }

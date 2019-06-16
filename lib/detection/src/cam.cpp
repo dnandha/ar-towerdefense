@@ -12,7 +12,7 @@ Cam::Cam(int camId)
     std::cout << "Camera init successful.\n";
     std::cout << "Setting cam parameters...\n";
 
-    std::cout << "\t[PARAM_FRAME_WIDTH] ";
+    // std::cout << "\t[PARAM_FRAME_WIDTH] ";
     // if (!_cap.set(CAP_PROP_FRAME_WIDTH, 1280))
     // {
     //     std::cout << "SUCCESS\n";

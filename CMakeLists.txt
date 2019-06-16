@@ -7,5 +7,6 @@ add_subdirectory(test)
 
 enable_testing()
 add_test (NAME GameTest COMMAND test_game)
+add_test (NAME EventTest COMMAND test_event)
 
 include_directories(include/)

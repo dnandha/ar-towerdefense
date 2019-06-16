@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _PATH_DETECTOR_H
+#define _PATH_DETECTOR_H
+
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
@@ -29,3 +31,5 @@ private:
 	Mat modifiedFrame;
 	string currentMask;
 };
+
+#endif
