@@ -7,17 +7,20 @@
 
 /*
  * Describes the walking path of a unit
+ * todo: put in another file or make entity type
  */
 struct Path {
   Position points;
 };
+
+class Scene; // forward declaration
 
 /*
  * Each object should be able to update/render itself
  * (Visitor pattern)
  */
 struct SceneEntity {
-  virtual void Update(double delta);
+  virtual void Update(double delta, Scene scene);
   virtual void Render(/*Window*/);
 };
 
@@ -40,6 +43,18 @@ class GameEntity : SceneEntity {
   public:
     GameEntity(int id, const char* name, MeshEntity* mesh) : _id(id), _name(name), _mesh(mesh) {}
 };
+
+/*
+ * Level/GameState/Scene
+ */
+class Scene : SceneEntity {
+  std::list<GameEntity> _gameEntities;
+
+  public:
+    void Save(const char* filename);
+    void Load(const char* filename);
+};
+
 
 /*
  * Enemy unit
@@ -88,12 +103,9 @@ class Tower : GameEntity {
  * Unit spawner
  */
 template<class T>
-class Spawner {
-  Position _pos;
+class Spawner : GameEntity {
   T _type;
   public:
-    Spawner(Position pos) : _pos(pos) {};
-
     void Start();
     void Stop();
 };

@@ -5,7 +5,7 @@
  *
  */
 enum EventType {
-  MarkerPlaceTower1,
+  MarkerPlaceTower,
   MarkerBuildTower,
   MarkerDestroyTower,
   MarkerStartGame,
@@ -31,7 +31,7 @@ class EventBus {
   std::list<EventListener> _listeners;
   public:
     EventBus() {}
-    void Listen(EventListener listener) { _listeners.push_back(listener); }
+    void AddHandler(EventListener listener) { _listeners.push_back(listener); }
     void FireEvent(EventType event) { for (EventListener listener : _listeners) listener.HandleEvent(event); }
 };
 
