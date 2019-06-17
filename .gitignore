@@ -1,4 +1,5 @@
 build
+docs
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
