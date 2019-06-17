@@ -6,23 +6,35 @@
  */
 int main()
 {
-    Cam cam(1);
-    ImageProcessor improc;
-
-    while (cam.Grab())
+    try
     {
-        Mat image = cam.GetFrame();
+        Cam cam(1);
+        ImageProcessor improc;
 
-        vector<Marker> markers = improc.DetectMarkers(image);
-
-        Mat markerImage = improc.DrawMarkers(image, markers);
-        imshow("marker image", markerImage);
-
-        if (improc.ContainsBorderMarkers(markers))
+        while (cam.Grab())
         {
-            Mat warpedPaperImage = improc.WarpPaperImage(image, markers, 900, 600);
-            imshow("warped image", warpedPaperImage);
+            Mat image = cam.GetFrame();
+            vector<Marker> markers = improc.DetectMarkers(image);
+
+            Mat markerImage = improc.DrawMarkers(image, markers);
+            imshow("marker image", markerImage);
+
+            if (improc.ContainsBorderMarkers(markers))
+            {
+                Mat warpedPaperImage = improc.WarpPaperImage(image, markers, 900, 600);
+                imshow("warped image", warpedPaperImage);
+            }
         }
+
+        std::cout << "Cant grab camera image";
+    }
+    catch (std::exception &ex)
+    {
+        std::cerr << ex.what() << std::endl;
+    }
+    catch (...)
+    {
+        std::cerr << "Caught unknown exception." << std::endl;
     }
 
     return 1;

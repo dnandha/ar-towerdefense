@@ -2,47 +2,30 @@
 
 Cam::Cam(int camId)
 {
-    cout << "Init camera..." << std::endl;
-    _cap.open(camId);
+    cout << "INIT CAMERA..." << endl;
+
+    int cameraId = 1;
+    int width = 1280;
+    int height = 720;
+
+    // Using GSTREAMER backend
+    std::ostringstream desc;
+    desc << "v4l2src device=/dev/video" << cameraId
+         << " ! videoconvert"
+         << " ! video/x-raw,width=" << width << ",height=" << height
+         << " ! appsink";
+    _cap.open(desc.str());
+
     if (!_cap.isOpened())
     {
-        cout << "FAIL." << std::endl;
+        cout << "CAMERA INIT FAILED." << endl;
+        return;
     }
 
-    std::cout << "Camera init successful.\n";
-    std::cout << "Setting cam parameters...\n";
+    cout << "\tCAMERA ID\t\t: " << cameraId << endl;
+    cout << "\tCAMERA RESOLUTION\t: " << width << "x" << height << endl;
 
-    // std::cout << "\t[PARAM_FRAME_WIDTH] ";
-    // if (!_cap.set(CAP_PROP_FRAME_WIDTH, 1280))
-    // {
-    //     std::cout << "SUCCESS\n";
-    // }
-    // else
-    // {
-    //     std::cout << "FAIL\n";
-    // }
-
-    // std::cout << "\t[PARAM_FRAME_HEIGHT] ";
-    // if (!_cap.set(CAP_PROP_FRAME_HEIGHT, 960))
-    // {
-    //     std::cout << "SUCCESS\n";
-    // }
-    // else
-    // {
-    //     std::cout << "FAIL\n";
-    // }
-
-    std::cout << "\t[PARAM_FPS] ";
-    if (!_cap.set(CAP_PROP_FPS, 15))
-    {
-        std::cout << "SUCCESS\n";
-    }
-    else
-    {
-        std::cout << "FAIL\n";
-    }
-
-    std::cout << "Setting cam parameters successful.\n";
+    cout << "CAMERA INIT SUCCESSFUL.\n";
 }
 
 bool Cam::Grab()
@@ -54,6 +37,7 @@ Mat Cam::GetFrame()
 {
     Mat image;
     _cap.retrieve(image);
+
     waitKey(10);
     return image;
 }

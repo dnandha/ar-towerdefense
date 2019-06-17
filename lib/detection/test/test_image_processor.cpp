@@ -47,5 +47,7 @@ TEST_CASE("ImageProcessor detects marker 0 and marker 1", "[improctest]")
 
         Marker marker1 = _improc.GetMarkerOfCategory(markers, Border1);
         REQUIRE(marker1.category == Border1);
+
+        REQUIRE(_improc.ContainsBorderMarkers(markers) == true);
     }
 }
