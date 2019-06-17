@@ -86,7 +86,7 @@ private:
 
     vector<Point2f> CalcPaperBorders(vector<Marker> markers);
     vector<Point2i> Vertices2ConvexHull(vector<Point2f> vertices);
-    Mat CutConvecHull(Mat image, vector<Point2f> vertices);
+    Mat CutMarker(Mat image, vector<Point2f> vertices);
 };
 
 #endif
