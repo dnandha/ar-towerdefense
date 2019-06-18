@@ -1,37 +1,22 @@
+#include <ctime>
+
 #include "game.h"
+
 
 /*
  * Example Implementation
  */
-void Game::Start() {
-  if (_hasEnded || _isPaused) {
-    _hasEnded = false;
-    _isPaused = false;
-  }
-}
 
+void Game::Start() {}
+void Game::Pause() {}
+void Game::Resume() {}
+void Game::End() {}
+void Game::GenerateLevels() {}
 void Game::Loop() {
-  while (!this->HasEnded()) {
-    for (Unit& unit : this->GetUnits()) {
-      if (unit.HasReachedEnd()) {
-	unit.Kill();
-	this->_player->TakeHit();
-      } else {
-	unit.Walk();
-	for (Tower& tower : this->GetTowers()) { 
-	  if (tower.Hits(unit)) {
-	    unit.TakeDamage(tower.GetDamage());
-	    if (unit.IsDead()) { 
-	      unit.Kill();
-	      this->_player->ScorePlus();
-	    }
-	  }
-	}
-      }
+  double start_time = std::time(nullptr);
+  while (this->state != State::Ended) {
+    for (GameEntity& ent : Scene::GetInstance().GetEntities()) {
+      ent.Update(std::time(nullptr) - start_time);
     }
   }
-}
-
-std::list<Unit> Game::GetUnits() {
-  return std::list<Unit>();
 }
