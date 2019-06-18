@@ -22,8 +22,8 @@ class Scene; // forward declaration
  */
 struct SceneEntity
 {
-  // virtual void Update(double delta, Scene scene);
-  // virtual void Render(/*Window*/);
+  virtual void Update(double delta) {};
+  virtual void Render(/*Window*/) {};
 };
 
 /*
@@ -42,48 +42,49 @@ class GameEntity : SceneEntity
 {
   int _id;
   const char *_name;
-  MeshEntity *_mesh;
+  MeshEntity _mesh;
   Position _pos;
 
 public:
-  GameEntity(int id, const char *name, MeshEntity *mesh) : _id(id), _name(name), _mesh(mesh) {}
+  GameEntity(int id, const char *name, MeshEntity& mesh) :
+    _id(id), _name(name), _mesh(mesh) {}
+
+  virtual void Update(double delta) {};
+  virtual void Render(/*Window*/) {};
 };
 
-/*
- * Level/GameState/Scene
- */
-class Scene : SceneEntity
-{
-  std::list<GameEntity> _gameEntities;
-
-public:
-  void Save(const char *filename);
-  void Load(const char *filename);
-};
 
 /*
- * Enemy unit
+ * Describes the walking path of a unit
+ * todo: put in another file or makunit
  */
 class Unit : GameEntity
 {
-  PathFinding *_pf;
+  PathFinding _pf;
 
   float _damagetaken;
-  float _hitpoints;
 
 public:
-  Unit(int id, const char *name, int hp, MeshEntity *mesh, PathFinding *pf) : GameEntity(id, name, mesh), _hitpoints(hp), _damagetaken(.0f), _pf(pf) {}
+  float walkspeed = 0.5; // pixels per ms
+  float hitpoints = 100;
 
-  void Walk(); // pf contains walking instructions
-  void Stop();
+  Unit(int id, const char *name, MeshEntity& mesh, PathFinding& pf) :
+    GameEntity(id, name, mesh), _damagetaken(.0f), _pf(pf) {}
+
+  //void Walk(); // pf contains walking instructions
+  //void Stop();
   //void LookAt(Position lookAt);
   //
-  bool HasReachedEnd();
 
   void Kill();
 
-  void TakeDamage(int dmg);
-  bool IsDead() { return _damagetaken >= _hitpoints; }
+  bool HasReachedEnd();
+
+  void TakeDamage(float dmg);
+  bool IsDead() { return _damagetaken >= this->hitpoints; }
+
+  void Update(double delta);
+  void Render(/*Window*/);
 };
 
 /*
@@ -92,17 +93,21 @@ public:
 class Tower : GameEntity
 {
   int _type;
-  float _damage;
-  float _range;
   float _fov;
 
 public:
+  float range = 100; // in pixels
+  float dpms = 10; // damage per ms
+
   void Build();
   void Destroy();
 
-  bool Hits(Unit unit);
+  bool Hits(Unit& unit);
 
-  float GetDamage() { return _damage; }
+  float GetDamage(double delta) { return this->dpms * delta; }
+
+  void Update(double delta);
+  void Render(/*Window*/);
 };
 
 /*
@@ -111,8 +116,6 @@ public:
 template <class T>
 class Spawner : GameEntity
 {
-  T _type;
-
 public:
   void Start();
   void Stop();

@@ -27,36 +27,99 @@ public:
   void ScorePlus() { _score++; }
 };
 
+enum State{
+  Init,
+  Running,
+  Paused,
+  Ended
+};
+
 /*
- * Put it all together
+ * Level/GameState/Scene
+ * Uses Singleton pattern
  */
-class Game
+class Scene
 {
-  std::list<Scene> _scenes;
-  Player *_player;
-  int _phase;
-  bool _hasEnded;
-  bool _isPaused;
+  Scene() {};
+  Scene(Scene const&) = delete;
+  void operator=(Scene const&) = delete;
+
+  std::list<GameEntity> _gameEntities;
 
 public:
-  Game(Player *player) : _player(player), _phase(0) {}
-  void GenerateLevels();
-  //void Run() {_hasEnded = false; _isPaused = false;}
-  void Start();
-  void Loop();
-  void Pause() { _isPaused = true; }
-  void Resume() { _isPaused = false; }
-  void End()
-  {
-    _hasEnded = true;
-    _isPaused = false;
+  static Scene& GetInstance() {
+    static Scene instance;
+    return instance;
   }
 
-  bool HasEnded() { return _hasEnded; }
-  bool IsPaused() { return _isPaused; }
+  void AddEntity(GameEntity& entity) {
+    _gameEntities.push_back(entity);
+  }
 
-  std::list<Unit> GetUnits();
-  std::list<Tower> GetTowers();
+  //void RemoveEntity(GameEntity& entity) {
+  //  _gameEntities.remove(entity);
+  //}
+
+  std::list<GameEntity> GetEntities() {
+    return _gameEntities;
+  }
+
+  template <class T>
+  std::list<T> GetEntities() {
+    std::list<T> matches;
+
+    T* c;
+    for (GameEntity& ent : _gameEntities) {
+      if ((c = dynamic_cast<T*>(&ent)) != nullptr) {
+	matches.push_back(*c);
+      }
+    }
+
+    return matches;
+  }
+
+  void Save(const char *filename);
+  void Load(const char *filename);
+};
+
+/*
+ * Main game class, puts it all together
+ */
+class GameBase
+{
+  Player _player;
+
+  public:
+    State state;
+
+    GameBase(Player& player) : _player(player), state(State::Init) {}
+
+    virtual void Start() {
+      state = State::Running;
+    }
+    virtual void Pause() {
+      state = State::Paused;
+    }
+    virtual void Resume() {
+      state = State::Running;
+    }
+    virtual void End()
+    {
+      state = State::Ended;
+    }
+
+    virtual void GenerateLevels() {}
+    virtual void Loop() {}
+};
+
+struct Game : GameBase {
+    Game(Player& player) : GameBase(player) {};
+    void Start();
+    void Pause();
+    void Resume();
+    void End();
+    void GenerateLevels();
+    void Loop();
 };
 
 #endif
