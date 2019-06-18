@@ -13,10 +13,10 @@ struct SortX
 ImageProcessor::ImageProcessor()
 {
     // calibration results
-    _camMatrix = (Mat_<double>(3, 3) << 1.7436456814490055e+03, 0., 9.7759459497189175e+02, 0.,
-                  1.7258234422776150e+03, 6.3571222615276474e+02, 0., 0., 1.);
-    _distCoeffs = (Mat_<double>(5, 1) << 2.0355046505753788e-01, -1.9960458729811597e+00,
-                   4.9231630538066791e-02, 1.1433409329564154e-02, 0.);
+    _camMatrix = (Mat_<double>(3, 3) << 9.5688579936159397e+02, 0., 6.5204540592076330e+02, 0.,
+                  9.5245103032304894e+02, 3.6538198893031625e+02, 0., 0., 1.);
+    _distCoeffs = (Mat_<double>(5, 1) << -5.8248455454749333e-02, 1.5857181599691350e-02,
+                   -7.2418305586809265e-03, 5.7471593045364724e-03, 0.);
 
     // dictionary: DICT_4X4_50=0, DICT_4X4_100=1, DICT_4X4_250=2,"
     // "DICT_4X4_1000=3, DICT_5X5_50=4, DICT_5X5_100=5, DICT_5X5_250=6, DICT_5X5_1000=7, "
@@ -34,11 +34,17 @@ ImageProcessor::ImageProcessor()
     _markerLength = 2.6;
 }
 
+/*
+ * Returns distortion coefficients matrix
+ */
 Mat ImageProcessor::GetDistCoeffs()
 {
     return _distCoeffs;
 }
 
+/*
+ * Detects marker categories, corners, and poses
+ */
 vector<Marker> ImageProcessor::DetectMarkers(Mat image)
 {
     try
@@ -81,6 +87,9 @@ vector<Marker> ImageProcessor::DetectMarkers(Mat image)
     }
 }
 
+/*
+ * Draws marker edges and poses on image
+ */
 Mat ImageProcessor::DrawMarkers(Mat image, vector<Marker> markers)
 {
     if (markers.size() > 0)
@@ -110,6 +119,9 @@ Mat ImageProcessor::DrawMarkers(Mat image, vector<Marker> markers)
     return image;
 }
 
+/* 
+ * Checks if vector contains the markers to determine paper borders
+ */
 bool ImageProcessor::ContainsBorderMarkers(vector<Marker> markers)
 {
     if (markers.size() == 0)
@@ -139,6 +151,9 @@ bool ImageProcessor::ContainsBorderMarkers(vector<Marker> markers)
     return false;
 }
 
+/*
+ * Removes perspective from with paper as ROI of the image
+ */
 Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers, int warpedImageWidth, int warpedImageHeight)
 {
     Mat imageCopy;
@@ -149,8 +164,8 @@ Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers, int warped
     Marker marker0 = GetMarkerOfCategory(markers, Border0);
     Marker marker1 = GetMarkerOfCategory(markers, Border1);
 
-    Mat cuttedMarker0Image = CutConvecHull(imageCopy, marker0.corners);
-    Mat cuttedMarker1Image = CutConvecHull(cuttedMarker0Image, marker1.corners);
+    Mat cuttedMarker0Image = CutMarker(imageCopy, marker0.corners);
+    Mat cuttedMarker1Image = CutMarker(cuttedMarker0Image, marker1.corners);
 
     vector<Point2f> orgPaperBorders = CastVector<Point2i, Point2f>(Vertices2ConvexHull(paperBorders));
 
@@ -174,6 +189,9 @@ Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers, int warped
     return warpedImage;
 }
 
+/*
+ * Calcuates paper borders for markers with border categories
+ */
 vector<Point2f> ImageProcessor::CalcPaperBorders(vector<Marker> markers)
 {
     if (markers.size() == 0 || !ContainsBorderMarkers(markers))
@@ -219,6 +237,9 @@ vector<Point2f> ImageProcessor::CalcPaperBorders(vector<Marker> markers)
     return paperBorders;
 }
 
+/*
+ * Get convex hull for vertices
+ */
 vector<Point2i> ImageProcessor::Vertices2ConvexHull(vector<Point2f> vertices)
 {
     // Cast Point2f to Point2i for fillConvexPoly function
@@ -231,20 +252,35 @@ vector<Point2i> ImageProcessor::Vertices2ConvexHull(vector<Point2f> vertices)
     return hull;
 }
 
-Mat ImageProcessor::CutConvecHull(Mat image, vector<Point2f> vertices)
+/*
+ * Draws white rectangle over marker
+ */
+Mat ImageProcessor::CutMarker(Mat image, vector<Point2f> vertices)
 {
     vector<Point2i> hull = Vertices2ConvexHull(vertices);
 
-    Mat roi(image.rows, image.cols, CV_8U, Scalar(255)); //white image
-    fillConvexPoly(roi, hull, Scalar(0));                //draw ROI in black
+    // Get bounding rect of hull
+    Rect bounding = boundingRect(hull);
+    int upscale = 10;
 
-    //Filter original image according to ROI
-    Mat cutted_image;
-    image.copyTo(cutted_image, roi); //alternative: bitwise_and(image, roi, filtered_image);
+    // Scale bounding rect up to prevent balck lines on the edges
+    Rect boundingScaled(bounding.x - upscale / 2,
+                        bounding.y - upscale / 2,
+                        bounding.width + upscale,
+                        bounding.height + upscale);
 
-    return cutted_image;
+    Point p1 = Point(boundingScaled.x, boundingScaled.y);
+    Point p2 = Point(boundingScaled.x + boundingScaled.width, boundingScaled.y + boundingScaled.height);
+
+    // Draw white filled rect over marker
+    rectangle(image, p1, p2, Scalar(255, 255, 255), -1);
+
+    return image;
 }
 
+/*
+ * Returns marker with given category from vector
+ */
 Marker ImageProcessor::GetMarkerOfCategory(vector<Marker> markers, MarkerCategory category)
 {
     for (std::size_t i = 0; i != markers.size(); i++)
