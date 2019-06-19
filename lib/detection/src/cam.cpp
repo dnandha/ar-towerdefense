@@ -1,43 +1,36 @@
 #include "cam.h"
 
-Cam::Cam(int camId)
-{
-    cout << "INIT CAMERA..." << endl;
+Cam::Cam(int camId) {
+  cout << "INIT CAMERA..." << endl;
 
-    int cameraId = 1;
-    int width = 1280;
-    int height = 720;
+  int cameraId = 1;
+  int width = 1280;
+  int height = 720;
 
-    // Using GSTREAMER backend
-    std::ostringstream desc;
-    desc << "v4l2src device=/dev/video" << cameraId
-         << " ! videoconvert"
-         << " ! video/x-raw,width=" << width << ",height=" << height
-         << " ! appsink";
-    _cap.open(desc.str());
+  // Using GSTREAMER backend
+  std::ostringstream desc;
+  desc << "v4l2src device=/dev/video" << cameraId << " ! videoconvert"
+       << " ! video/x-raw,width=" << width << ",height=" << height
+       << " ! appsink";
+  _cap.open(desc.str());
 
-    if (!_cap.isOpened())
-    {
-        cout << "CAMERA INIT FAILED." << endl;
-        return;
-    }
+  if (!_cap.isOpened()) {
+    cout << "CAMERA INIT FAILED." << endl;
+    return;
+  }
 
-    cout << "\tCAMERA ID\t\t: " << cameraId << endl;
-    cout << "\tCAMERA RESOLUTION\t: " << width << "x" << height << endl;
+  cout << "\tCAMERA ID\t\t: " << cameraId << endl;
+  cout << "\tCAMERA RESOLUTION\t: " << width << "x" << height << endl;
 
-    cout << "CAMERA INIT SUCCESSFUL.\n";
+  cout << "CAMERA INIT SUCCESSFUL.\n";
 }
 
-bool Cam::Grab()
-{
-    return _cap.grab();
-}
+bool Cam::Grab() { return _cap.grab(); }
 
-Mat Cam::GetFrame()
-{
-    Mat image;
-    _cap.retrieve(image);
+Mat Cam::GetFrame() {
+  Mat image;
+  _cap.retrieve(image);
 
-    waitKey(10);
-    return image;
+  waitKey(10);
+  return image;
 }
