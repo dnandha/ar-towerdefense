@@ -25,7 +25,7 @@ class MarkerDetection {
  */
 class PathFinding {
  public:
-  PathFinding(CV* cv, EventBus bus);
+  PathFinding();
 };
 
 /*

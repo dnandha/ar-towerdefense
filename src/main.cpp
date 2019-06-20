@@ -4,7 +4,7 @@
  * Global vars
  */
 Player _player("Mongo");
-Game _game(_player);
+Game _game(&_player);
 
 /*
  * Init Game
