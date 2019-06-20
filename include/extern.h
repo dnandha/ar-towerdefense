@@ -1,7 +1,8 @@
 #ifndef _EXTERN_H
-#define	_EXTERN_H
+#define _EXTERN_H
 
-#include "event.h"
+#include "event_bus.h"
+#include "events.h"
 
 /*
  * Computer vision component
@@ -14,26 +15,26 @@ class CV {
  *
  */
 class MarkerDetection {
-  public:
-    MarkerDetection(CV* cv, EventBus bus);
+ public:
+  MarkerDetection();
+  void Run();
 };
 
 /*
  * Holds some sort of path finding logic
  */
 class PathFinding {
-  public:
-    PathFinding(CV* cv, EventBus bus);
+ public:
+  PathFinding(CV* cv, EventBus bus);
 };
-
 
 /*
  * Rendering backend / engine
  */
 class Ogre {
-  public:
-    void SetCamera();
-    void SetBackground();
+ public:
+  void SetCamera();
+  void SetBackground();
 };
 
 #endif
