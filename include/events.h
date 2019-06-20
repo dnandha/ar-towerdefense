@@ -3,9 +3,10 @@
 
 #include "event_bus.h"
 
-class BuildTowerEvent : public Event {
+// TODO: add detection lib depenency to specifiy list of markers as args
+class MarkersDetectedEvent : public Event {
  public:
-  BuildTowerEvent(std::string mockArg) : _mockArg(mockArg) {}
+  MarkersDetectedEvent(std::string mockArg) : _mockArg(mockArg) {}
 
   std::string GetMockArg() { return _mockArg; };
 

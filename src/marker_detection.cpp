@@ -1,9 +1,9 @@
 #include "extern.h"
 
 void MarkerDetection::Run() {
-  // TODO : condition that build tower marker got detected
+  // TODO : condition that markers got detected
   if (false) {
-    BuildTowerEvent buildTowerEvent("mock");
-    EventBus::FireEvent(buildTowerEvent);
+    MarkersDetectedEvent markersDetectedEvent("mock");
+    EventBus::FireEvent(markersDetectedEvent);
   }
 }
