@@ -1,9 +1,9 @@
 #include "extern.h"
 
-void MarkerDetection::Run() {
+void MarkerDetection::Detect() {
   // TODO : condition that markers got detected
-  if (false) {
+  //if (false) {
     MarkersDetectedEvent markersDetectedEvent("mock");
     EventBus::FireEvent(markersDetectedEvent);
-  }
+  //}
 }

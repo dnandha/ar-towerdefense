@@ -109,17 +109,15 @@ class GameBase
     }
 
     virtual void GenerateLevels() {}
-    virtual void Loop() {}
 };
 
 struct Game : GameBase {
     Game(Player* player) : GameBase(player) {};
+    void Generate();
     void Start();
     void Pause();
     void Resume();
     void End();
-    void GenerateLevels();
-    void Loop();
 };
 
 #endif

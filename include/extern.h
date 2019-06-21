@@ -16,8 +16,8 @@ class CV {
  */
 class MarkerDetection {
  public:
-  MarkerDetection();
-  void Run();
+  //MarkerDetection();
+  void Detect();
 };
 
 /*
