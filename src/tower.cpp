@@ -2,10 +2,10 @@
 
 
 void Tower::Update(double delta) {
-  for (Unit &unit : Scene::GetInstance().GetEntities<Unit>()) {
+  for (Unit* unit : Scene::GetInstance().GetEntities<Unit>()) {
       if (this->Hits(unit)) {
 	float dmg = this->GetDamage(delta);
-	unit.TakeDamage(dmg);
+	unit->TakeDamage(dmg);
       }
   }
 }

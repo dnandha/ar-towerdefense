@@ -16,8 +16,8 @@ class CV {
  */
 class MarkerDetection {
  public:
-  MarkerDetection();
-  void Run();
+  //MarkerDetection();
+  void Detect();
 };
 
 /*
@@ -25,7 +25,7 @@ class MarkerDetection {
  */
 class PathFinding {
  public:
-  PathFinding(CV* cv, EventBus bus);
+  PathFinding();
 };
 
 /*

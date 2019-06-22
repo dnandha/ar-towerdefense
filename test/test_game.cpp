@@ -5,7 +5,7 @@
 
 TEST_CASE( "Successfully tested game", "[gametest]" ) {
   Player _player("Mongo");
-  Game _game(_player);
+  Game _game(&_player);
 
   SECTION ("starting game") {
     _game.Start();

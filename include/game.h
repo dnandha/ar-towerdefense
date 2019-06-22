@@ -44,7 +44,7 @@ class Scene
   Scene(Scene const&) = delete;
   void operator=(Scene const&) = delete;
 
-  std::list<GameEntity> _gameEntities;
+  std::list<GameEntity*> _gameEntities;
 
 public:
   static Scene& GetInstance() {
@@ -52,7 +52,7 @@ public:
     return instance;
   }
 
-  void AddEntity(GameEntity& entity) {
+  void AddEntity(GameEntity* entity) {
     _gameEntities.push_back(entity);
   }
 
@@ -60,18 +60,18 @@ public:
   //  _gameEntities.remove(entity);
   //}
 
-  std::list<GameEntity> GetEntities() {
+  std::list<GameEntity*> GetEntities() {
     return _gameEntities;
   }
 
   template <class T>
-  std::list<T> GetEntities() {
-    std::list<T> matches;
+  std::list<T*> GetEntities() {
+    std::list<T*> matches;
 
     T* c;
-    for (GameEntity& ent : _gameEntities) {
-      if ((c = dynamic_cast<T*>(&ent)) != nullptr) {
-	matches.push_back(*c);
+    for (GameEntity* ent : _gameEntities) {
+      if ((c = dynamic_cast<T*>(ent)) != nullptr) {
+	matches.push_back(c);
       }
     }
 
@@ -87,12 +87,12 @@ public:
  */
 class GameBase
 {
-  Player _player;
+  Player* _player;
 
   public:
     State state;
 
-    GameBase(Player& player) : _player(player), state(State::Init) {}
+    GameBase(Player* player) : _player(player), state(State::Init) {}
 
     virtual void Start() {
       state = State::Running;
@@ -109,17 +109,15 @@ class GameBase
     }
 
     virtual void GenerateLevels() {}
-    virtual void Loop() {}
 };
 
 struct Game : GameBase {
-    Game(Player& player) : GameBase(player) {};
+    Game(Player* player) : GameBase(player) {};
+    void Generate();
     void Start();
     void Pause();
     void Resume();
     void End();
-    void GenerateLevels();
-    void Loop();
 };
 
 #endif

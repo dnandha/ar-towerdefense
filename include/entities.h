@@ -42,11 +42,11 @@ class GameEntity : SceneEntity
 {
   int _id;
   const char *_name;
-  MeshEntity _mesh;
+  MeshEntity* _mesh;
   Position _pos;
 
 public:
-  GameEntity(int id, const char *name, MeshEntity& mesh) :
+  GameEntity(int id, const char *name, MeshEntity* mesh) :
     _id(id), _name(name), _mesh(mesh) {}
 
   virtual void Update(double delta) {};
@@ -60,7 +60,7 @@ public:
  */
 class Unit : GameEntity
 {
-  PathFinding _pf;
+  PathFinding* _pf;
 
   float _damagetaken;
 
@@ -68,7 +68,7 @@ public:
   float walkspeed = 0.5; // pixels per ms
   float hitpoints = 100;
 
-  Unit(int id, const char *name, MeshEntity& mesh, PathFinding& pf) :
+  Unit(int id, const char *name, MeshEntity* mesh, PathFinding* pf) :
     GameEntity(id, name, mesh), _damagetaken(.0f), _pf(pf) {}
 
   //void Walk(); // pf contains walking instructions
@@ -80,7 +80,7 @@ public:
 
   bool HasReachedEnd();
 
-  void TakeDamage(float dmg);
+  void TakeDamage(float dmg) { _damagetaken += dmg; }
   bool IsDead() { return _damagetaken >= this->hitpoints; }
 
   void Update(double delta);
@@ -102,7 +102,7 @@ public:
   void Build();
   void Destroy();
 
-  bool Hits(Unit& unit);
+  bool Hits(Unit* unit);
 
   float GetDamage(double delta) { return this->dpms * delta; }
 
@@ -114,11 +114,19 @@ public:
  * Unit spawner
  */
 template <class T>
-class Spawner : GameEntity
+class Spawner 
 {
 public:
-  void Start();
+  T Spawn();
+  void Start(double interval);
   void Stop();
 };
+
+template<class Unit>
+Unit Spawner<Unit>::Spawn() {
+  Unit unit(0, "orcan", nullptr, nullptr);
+
+  return unit;
+}
 
 #endif
