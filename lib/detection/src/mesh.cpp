@@ -1,8 +1,5 @@
 #include "mesh.h"
 
-using namespace cv;
-using namespace std;
-
 Mesh::Mesh(vector<Vertex> vertices, vector<Vertex> cornerVertices, int xmax,
            int ymax, int xmin, int ymin) {
   this->xmax = xmax;
@@ -75,6 +72,15 @@ void Mesh::CreatePolygonsRelativToIndividualVertices() {
   OrderPolygonsAfterCentroiddistances();
 }
 
+void Mesh::CreatePolygonsRelativToIndividualVerticesWithRange(int range) {
+  for (int v = 0; v < vertices.size(); v++) {
+    FindVerticesInRange(v, range);
+  }
+
+  ComputeCentroids();
+  OrderPolygonsAfterCentroiddistances();
+}
+
 int Mesh::ComputeCentroidClosestToBorder() {
   int vertexWithShortestDistance_Index_X = 0;
   float minDistanceToBorder_X = ((int)xmax / 2) - polygons[0].centroid.x;
@@ -127,6 +133,8 @@ void Mesh::FindTwoClosestVertices(int index) {
   polygons.push_back(new_polygon);
 }
 
+void Mesh::FindVerticesInRange(int index, int range) {}
+
 vector<double> Mesh::ComputeVertexDistancesTo(int vertex_Index) {
   double x;
   double y;
@@ -148,17 +156,6 @@ vector<double> Mesh::ComputeVertexDistancesTo(int vertex_Index) {
     }
   }
 
-  if (vertex_Index == 0) {
-    ofstream objFile;
-    objFile.open("distances.txt");
-
-    for (int d = 0; d < distances.size(); d++) {
-      objFile << d << " : " << distances[d] << "\n";
-    }
-
-    objFile.close();
-  }
-
   return distances;
 }
 
@@ -177,7 +174,6 @@ void Mesh::ComputeCentroids() {
 
 void Mesh::OrderPolygonsAfterCentroiddistances() {
   int index = ComputeCentroidClosestToBorder();
-  waitKey(0);
   int min_index;
 
   swap(polygons[0], polygons[index]);

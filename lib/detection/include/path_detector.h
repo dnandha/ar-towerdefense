@@ -11,35 +11,34 @@
 
 using namespace cv;
 using namespace std;
+
 class PathDetector {
  public:
-  PathDetector();
-  PathDetector(string);
-  ~PathDetector();
-  void ShowFrame();
+  PathDetector() {}
+  PathDetector(Mat frame) : _frame(frame) {}
+
   Size FrameSize();
-  void ShowModifiedFrame();
-  void RangeThresholdBinary(Scalar lowerBoundary = Scalar(0, 0, 0),
-                            Scalar upperBoundary = Scalar(75, 75, 75));
+  Mat RangeThresholdBinary(Mat frame, Scalar lowerBoundary = Scalar(0, 0, 0),
+                           Scalar upperBoundary = Scalar(100, 100, 100));
   void Gaussian();
   void Laplace();
   void CannyTwo();
   void DrawHoughLines(int threshold = 1, double minLineLength = 10,
                       double maxLineGap = 5);
-  vector<Point2f> Cornerdetection(int maxCorners = 200,
-                                  double qualityLevel = 0.0001,
-                                  double minDistance = 30, int blockSize = 3,
+  vector<Point2f> Cornerdetection(Mat frame, int maxCorners = 1000,
+                                  double qualityLevel = 0.001,
+                                  double minDistance = 25, int blockSize = 3,
                                   bool useHarrisDetector = false,
                                   double k = 0.04);
   void AdaptiveThreshold();
   void AdaptiveThresholdBinary();
-  void PathMeshInImg(Mesh mesh);
-  void PathCentroids(Mesh mesh);
+  Mat PathMeshInImg(Mat frame, Mesh mesh);
+  Mat PathCentroids(Mat frame, Mesh mesh);
 
  private:
-  Mat frame;
-  Mat modifiedFrame;
-  string currentMask;
+  Mat _frame;
+  Mat _modifiedFrame;
+  string _currentMask;
 };
 
 #endif

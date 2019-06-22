@@ -19,6 +19,11 @@ struct Vertex {
 struct Polygon {
   int indexA, indexB, indexC;
   Vertex centroid;
+  void ComputeCentroid(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
+    this->centroid = {(vertexA.x + vertexB.x + vertexC.x) / 3,
+                      (vertexA.y + vertexB.y + vertexC.y) / 3,
+                      (vertexA.z + vertexB.z + vertexC.z) / 3};
+  }
 };
 
 class Mesh {
@@ -28,6 +33,7 @@ class Mesh {
   virtual ~Mesh();
   void MakeObjFile(string name);
   void CreatePolygonsRelativToIndividualVertices();
+  void CreatePolygonsRelativToIndividualVerticesWithRange(int range);
   vector<Vertex> vertices, cornerVertices;
   vector<Polygon> polygons;
 
@@ -35,6 +41,7 @@ class Mesh {
   int xmax, xmin, ymax, ymin, vertexCount;
   int ComputeCentroidClosestToBorder();
   void FindTwoClosestVertices(int index);
+  void FindVerticesInRange(int index, int range);
   vector<double> ComputeVertexDistancesTo(int vertex_Index);
   void ComputeCentroids();
   void OrderPolygonsAfterCentroiddistances();

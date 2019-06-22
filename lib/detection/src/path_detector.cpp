@@ -1,37 +1,20 @@
 #include "path_detector.h"
 
-using namespace cv;
-using namespace std;
+Size PathDetector::FrameSize() { return _frame.size(); }
 
-PathDetector::PathDetector() {}
+Mat PathDetector::RangeThresholdBinary(Mat frame, Scalar lowerBoundary,
+                                       Scalar upperBoundary) {
+  Mat grayscaleImage;
+  inRange(frame, lowerBoundary, upperBoundary, grayscaleImage);
 
-PathDetector::PathDetector(string frameName) { frame = imread(frameName, 1); }
-
-PathDetector::~PathDetector() {}
-
-void PathDetector::ShowFrame() {
-  imshow("Frame", frame);
-  waitKey(0);
-}
-
-Size PathDetector::FrameSize() { return frame.size(); }
-
-void PathDetector::ShowModifiedFrame() {
-  imshow(currentMask, modifiedFrame);
-  waitKey(0);
-}
-
-void PathDetector::RangeThresholdBinary(Scalar lowerBoundary,
-                                        Scalar upperBoundary) {
-  inRange(frame, lowerBoundary, upperBoundary, modifiedFrame);
-  currentMask = "Black and White";
+  return grayscaleImage;
 }
 
 void PathDetector::Gaussian() {
   // Gauss
-  GaussianBlur(frame, modifiedFrame, Size(3, 3), 0, 0, 4);
-  cvtColor(frame, modifiedFrame, COLOR_BGR2GRAY);
-  currentMask = "Gauss";
+  GaussianBlur(_frame, _modifiedFrame, Size(3, 3), 0, 0, 4);
+  cvtColor(_frame, _modifiedFrame, COLOR_BGR2GRAY);
+  _currentMask = "Gauss";
 }
 
 void PathDetector::Laplace() {
@@ -40,14 +23,14 @@ void PathDetector::Laplace() {
 
   Mat help;
   // Laplace
-  Laplacian(modifiedFrame, help, 3, 1, 1.0, 0.0, 4);
-  convertScaleAbs(help, modifiedFrame);
-  currentMask = "Laplace auf Gauss";
+  Laplacian(_modifiedFrame, help, 3, 1, 1.0, 0.0, 4);
+  convertScaleAbs(help, _modifiedFrame);
+  _currentMask = "Laplace auf Gauss";
 }
 
 void PathDetector::CannyTwo() {
-  Canny(frame, modifiedFrame, 50, 200, 3);
-  currentMask = "Canny";
+  Canny(_frame, _modifiedFrame, 50, 200, 3);
+  _currentMask = "Canny";
 }
 
 void PathDetector::DrawHoughLines(int threshold, double minLineLength,
@@ -57,13 +40,13 @@ void PathDetector::DrawHoughLines(int threshold, double minLineLength,
 
   Mat help;
 
-  cvtColor(modifiedFrame, help, COLOR_GRAY2BGR);
+  cvtColor(_modifiedFrame, help, COLOR_GRAY2BGR);
 
   //#if 0
 
   vector<Vec4i> lines;
 
-  HoughLinesP(modifiedFrame, lines, 1, 3.1415 / 180, threshold, minLineLength,
+  HoughLinesP(_modifiedFrame, lines, 1, 3.1415 / 180, threshold, minLineLength,
               maxLineGap);
 
   for (size_t i = 0; i < lines.size(); i++) {
@@ -71,11 +54,11 @@ void PathDetector::DrawHoughLines(int threshold, double minLineLength,
     line(help, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0, 0, 255), 3);
   }
 
-  modifiedFrame = help.clone();
-  currentMask = "HoughLines auf Canny";
+  _modifiedFrame = help.clone();
+  _currentMask = "HoughLines auf Canny";
 }
 
-vector<Point2f> PathDetector::Cornerdetection(int maxCorners,
+vector<Point2f> PathDetector::Cornerdetection(Mat frame, int maxCorners,
                                               double qualityLevel,
                                               double minDistance, int blockSize,
                                               bool useHarrisDetector,
@@ -84,88 +67,71 @@ vector<Point2f> PathDetector::Cornerdetection(int maxCorners,
   Mat help;
   vector<Point2f> corners;
 
-  // bild in graut�ne umwandeln
-  // cvtColor(frame, help, COLOR_BGR2GRAY);
-  // inRange(frame, Scalar(0, 0, 0), Scalar(130, 150, 150), help);
-  CannyTwo();
-  // cvtColor(modifiedFrame, help, COLOR_GRAY2BGR);
-
   // Cornerdetection
-
-  goodFeaturesToTrack(modifiedFrame, corners, maxCorners, qualityLevel,
-                      minDistance, Mat(), blockSize, useHarrisDetector, k);
-  modifiedFrame = frame.clone();
-  /// Draw corners detected
-
-  cout << "** Number of corners detected: " << corners << endl;
-  int r = 4;
-  for (int i = 0; i < corners.size(); i++) {
-    circle(
-        modifiedFrame, corners[i], r,
-        Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255)),
-        -1, 8, 0);
-  }
-  currentMask = "Corners";
+  goodFeaturesToTrack(frame, corners, maxCorners, qualityLevel, minDistance,
+                      Mat(), blockSize, useHarrisDetector, k);
 
   return corners;
 }
 
 void PathDetector::AdaptiveThreshold() {
   Mat help;
-  cvtColor(frame, help, COLOR_BGR2GRAY);
+  cvtColor(_frame, help, COLOR_BGR2GRAY);
   // Adaptive Threshhold
-  adaptiveThreshold(help, modifiedFrame, 200, ADAPTIVE_THRESH_MEAN_C,
+  adaptiveThreshold(help, _modifiedFrame, 200, ADAPTIVE_THRESH_MEAN_C,
                     THRESH_BINARY, 3, 2);
-  currentMask = "Adaptive Threshold";
+  _currentMask = "Adaptive Threshold";
 }
 
 void PathDetector::AdaptiveThresholdBinary() {
   // Adaptive ThreshholdXBin�r
   AdaptiveThreshold();
   Mat help, bnw;
-  inRange(frame, Scalar(0, 0, 0), Scalar(75, 75, 75), bnw);
-  help = modifiedFrame.mul(bnw);
-  modifiedFrame = help.clone();
-  currentMask = "Adaptive Threshold Binary";
+  inRange(_frame, Scalar(0, 0, 0), Scalar(75, 75, 75), bnw);
+  help = _modifiedFrame.mul(bnw);
+  _modifiedFrame = help.clone();
+  _currentMask = "Adaptive Threshold Binary";
 }
 
-void PathDetector::PathMeshInImg(Mesh mesh) {
-  modifiedFrame = frame.clone();
+Mat PathDetector::PathMeshInImg(Mat frame, Mesh mesh) {
+  Mat pathImage = frame.clone();
   RNG rng(12345);
   Scalar color;
   for (int p = 0; p < mesh.polygons.size(); p++) {
     color =
         Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
-    line(modifiedFrame,
+    line(pathImage,
          Point(mesh.vertices[mesh.polygons[p].indexA].x,
                mesh.vertices[mesh.polygons[p].indexA].y),
          Point(mesh.vertices[mesh.polygons[p].indexB].x,
                mesh.vertices[mesh.polygons[p].indexB].y),
          color);
-    line(modifiedFrame,
+    line(pathImage,
          Point(mesh.vertices[mesh.polygons[p].indexB].x,
                mesh.vertices[mesh.polygons[p].indexB].y),
          Point(mesh.vertices[mesh.polygons[p].indexC].x,
                mesh.vertices[mesh.polygons[p].indexC].y),
          color);
-    line(modifiedFrame,
+    line(pathImage,
          Point(mesh.vertices[mesh.polygons[p].indexC].x,
                mesh.vertices[mesh.polygons[p].indexC].y),
          Point(mesh.vertices[mesh.polygons[p].indexA].x,
                mesh.vertices[mesh.polygons[p].indexA].y),
          color);
   }
-  currentMask = "Mesh Path";
+
+  return pathImage;
 }
 
-void PathDetector::PathCentroids(Mesh mesh) {
-  modifiedFrame = frame.clone();
+Mat PathDetector::PathCentroids(Mat frame, Mesh mesh) {
+  Mat centroidImage = frame.clone();
   for (int p = 0; p < mesh.polygons.size() - 1; p++) {
     line(
-        modifiedFrame,
+        centroidImage,
         Point(mesh.polygons[p].centroid.x, mesh.polygons[p].centroid.y),
         Point(mesh.polygons[p + 1].centroid.x, mesh.polygons[p + 1].centroid.y),
         Scalar(0, 0, 255));
   }
-  currentMask = "Centroid Path";
+
+  return centroidImage;
 }
