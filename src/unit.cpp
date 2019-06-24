@@ -1,4 +1,6 @@
-#include "game.h"
+#include "entities.h"
+
+#include <iostream>
 
 
 bool Unit::HasReachedEnd()
@@ -21,5 +23,13 @@ void Unit::Update(double delta) {
   }
 }
 
-void Unit::Render(/*Window*/) {
+void Unit::Render(Renderer* renderer) {
+    if(!on_screen) {
+        std::cout << "adding: " << this->GetName() << std::endl;
+        renderer->AddEntity(this->GetName(), this->GetMeshName());
+        renderer->SetEntityPosition(this->GetName(), this->GetPosition());
+        renderer->SetEntityAnimation(this->GetName(), "RunBase");
+        renderer->SetEntityAnimation(this->GetName(), "RunTop");
+        on_screen = true;
+    }
 }

@@ -4,7 +4,6 @@
 #include <list>
 
 #include "common.h"
-#include "entities.h"
 
 /*
  * Track player statistics
@@ -32,54 +31,6 @@ enum State{
   Running,
   Paused,
   Ended
-};
-
-/*
- * Level/GameState/Scene
- * Uses Singleton pattern
- */
-class Scene
-{
-  Scene() {};
-  Scene(Scene const&) = delete;
-  void operator=(Scene const&) = delete;
-
-  std::list<GameEntity*> _gameEntities;
-
-public:
-  static Scene& GetInstance() {
-    static Scene instance;
-    return instance;
-  }
-
-  void AddEntity(GameEntity* entity) {
-    _gameEntities.push_back(entity);
-  }
-
-  //void RemoveEntity(GameEntity& entity) {
-  //  _gameEntities.remove(entity);
-  //}
-
-  std::list<GameEntity*> GetEntities() {
-    return _gameEntities;
-  }
-
-  template <class T>
-  std::list<T*> GetEntities() {
-    std::list<T*> matches;
-
-    T* c;
-    for (GameEntity* ent : _gameEntities) {
-      if ((c = dynamic_cast<T*>(ent)) != nullptr) {
-	matches.push_back(c);
-      }
-    }
-
-    return matches;
-  }
-
-  void Save(const char *filename);
-  void Load(const char *filename);
 };
 
 /*

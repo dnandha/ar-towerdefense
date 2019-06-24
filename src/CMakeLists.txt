@@ -1,4 +1,3 @@
-include_directories(${ARTD_SOURCE_DIR}/include)
-add_library (game game.cpp player.cpp unit.cpp tower.cpp event_bus.cpp event.cpp marker_detection.cpp)
+add_library (game game.cpp scene.cpp player.cpp unit.cpp tower.cpp event_bus.cpp event.cpp marker_detection.cpp)
 add_executable(artd main.cpp)
-target_link_libraries(artd game)
+target_link_libraries(artd game renderer)

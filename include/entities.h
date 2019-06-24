@@ -14,43 +14,31 @@ struct Path
   Position points;
 };
 
-class Scene; // forward declaration
-
-/*
- * Each object should be able to update/render itself
- * (Visitor pattern)
- */
-struct SceneEntity
-{
-  virtual void Update(double delta) {};
-  virtual void Render(/*Window*/) {};
-};
-
-/*
- * Holds mesh data
- */
-struct MeshEntity
-{
-  const char *mesh_name;
-  const char *pack_name;
-};
-
 /*
  * Abstract object which represents game entity
  */
-class GameEntity : SceneEntity
+class GameEntity
 {
   int _id;
-  const char *_name;
-  MeshEntity* _mesh;
+  std::string _name;
+  std::string _meshname;
   Position _pos;
 
 public:
-  GameEntity(int id, const char *name, MeshEntity* mesh) :
-    _id(id), _name(name), _mesh(mesh) {}
+  bool on_screen;
 
+  GameEntity(int id, const std::string& name, const std::string& meshname) :
+    _id(id), _name(name), _meshname(meshname), on_screen(false) {}
+
+  std::string GetName() { return _name; }
+  std::string GetMeshName() { return _meshname; }
+
+  void SetPosition(Position pos) { _pos = pos; }
+  Position GetPosition() { return _pos; }
+
+  // each entity should be able to update and render itself (visitor pattern)
   virtual void Update(double delta) {};
-  virtual void Render(/*Window*/) {};
+  virtual void Render(Renderer* renderer) {};
 };
 
 
@@ -58,7 +46,7 @@ public:
  * Describes the walking path of a unit
  * todo: put in another file or makunit
  */
-class Unit : GameEntity
+class Unit : public GameEntity
 {
   PathFinding* _pf;
 
@@ -68,8 +56,8 @@ public:
   float walkspeed = 0.5; // pixels per ms
   float hitpoints = 100;
 
-  Unit(int id, const char *name, MeshEntity* mesh, PathFinding* pf) :
-    GameEntity(id, name, mesh), _damagetaken(.0f), _pf(pf) {}
+  Unit(int id, const std::string& name, const std::string& meshname, PathFinding* pf) :
+    GameEntity(id, name, meshname), _damagetaken(.0f), _pf(pf) {}
 
   //void Walk(); // pf contains walking instructions
   //void Stop();
@@ -84,13 +72,19 @@ public:
   bool IsDead() { return _damagetaken >= this->hitpoints; }
 
   void Update(double delta);
-  void Render(/*Window*/);
+  void Render(Renderer* renderer);
+};
+
+class MobSinbad : public Unit {
+    public:
+        MobSinbad(const std::string& name, PathFinding* pf) :
+            Unit(0, name, "Sinbad.mesh", pf) {};
 };
 
 /*
  * Describes tower game objects
  */
-class Tower : GameEntity
+class Tower : public GameEntity
 {
   int _type;
   float _fov;
@@ -107,26 +101,7 @@ public:
   float GetDamage(double delta) { return this->dpms * delta; }
 
   void Update(double delta);
-  void Render(/*Window*/);
+  void Render(Renderer* renderer);
 };
-
-/*
- * Unit spawner
- */
-template <class T>
-class Spawner 
-{
-public:
-  T Spawn();
-  void Start(double interval);
-  void Stop();
-};
-
-template<class Unit>
-Unit Spawner<Unit>::Spawn() {
-  Unit unit(0, "orcan", nullptr, nullptr);
-
-  return unit;
-}
 
 #endif

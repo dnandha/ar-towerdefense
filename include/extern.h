@@ -4,12 +4,15 @@
 #include "event_bus.h"
 #include "events.h"
 
+#include "renderer.h"
+
 /*
  * Computer vision component
  */
 class CV {
   // todo
 };
+
 
 /*
  *

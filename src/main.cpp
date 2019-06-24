@@ -1,5 +1,8 @@
 #include "game.h"
+#include "entities.h"
+#include "scene.h"
 #include "events.h"
+#include "spawner.hpp"
 
 #include <iostream>
 #include <ctime>
@@ -14,34 +17,38 @@ void initialize() {
   // load meshes
 }
 
-struct MarkerHandler : EventHandler<MarkersDetectedEvent> {
-  void OnEvent(MarkersDetectedEvent& e) {
-    if (e.GetMockArg() == "mock") {
-      std::cout << "mock event received" << std::endl;
-    }
-  }
-};
-
 /*
  * Main
  */
 int main() {
-  Player player("Mongo");
-  Game game(&player);
-  MarkerDetection detector;
-  MarkerHandler markerhandler;
-  EventBus::GetInstance()->AddHandler(markerhandler);
+    // create rendering window
+    Size2i winsize(800, 600);
+    Renderer renderer(winsize, {"packs/Sinbad.zip"});
 
-  game.Generate();
-  game.Start();
+    // create game objects
+    Player player("Mongo");
+    Game game(&player);
+    MarkerDetection detector;
 
-  double start_time = std::time(nullptr);
-  while (game.state != State::Ended) {
-    detector.Detect();
-    for (GameEntity* ent : Scene::GetInstance().GetEntities()) {
-      ent->Update((std::time(nullptr) - start_time)/1000.0);
+    // spawn mobs using spawner
+    Spawner<MobSinbad> mobspawner;
+    mobspawner.Spawn(10);
+
+    // generate and start game
+    game.Generate();
+    game.Start();
+
+    // start time and enter game loop
+    double start_time = std::time(nullptr);
+    while (game.state != State::Ended && renderer.WaitKey(1) != 27) {
+        // detect markers
+        detector.Detect();
+        // update and render scene
+        for (Unit* ent : Scene::GetInstance().GetEntities<Unit>()) {
+            ent->Update((std::time(nullptr) - start_time)/1000.0);
+            ent->Render(&renderer);
+        }
     }
-  }
 
-  return 1;
+    return 1;
 }
