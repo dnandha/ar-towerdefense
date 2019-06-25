@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include "event_bus.h"
+#include "event_bus.hpp"
 
 class TestEvent : public Event {
  public:

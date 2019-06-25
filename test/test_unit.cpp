@@ -5,17 +5,15 @@
 
 
 TEST_CASE( "Successfully tested unit", "[unittest]" ) {
-  Spawner<Unit> _spawner;
+  MobSinbad mob("orcan", nullptr);
 
   SECTION ("kill unit") {
-    Unit unit = _spawner.Spawn();
-
-    REQUIRE(!unit.IsDead());
+    REQUIRE(!mob.IsDead());
     
-    unit.TakeDamage(90);
-    REQUIRE(!unit.IsDead());
+    mob.TakeDamage(90);
+    REQUIRE(!mob.IsDead());
 
-    unit.TakeDamage(10);
-    REQUIRE(unit.IsDead());
+    mob.TakeDamage(10);
+    REQUIRE(mob.IsDead());
   }
 }

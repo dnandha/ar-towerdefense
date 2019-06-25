@@ -17,10 +17,15 @@ class Renderer {
     void AddEntity(const std::string& name,
                 const std::string& meshname);
 
+    void RemoveEntity(const std::string& name);
+
     void SetEntityPosition(const std::string& name,
                        std::vector<double> pos);
 
-    void SetEntityAnimation(const std::string& name,
+    void PlayEntityAnimation(const std::string& name,
+                       const std::string& animname);
+
+    void StopEntityAnimation(const std::string& name,
                        const std::string& animname);
 
     void UpdateView(Vec3d tvec, Vec3d rvec);

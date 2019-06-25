@@ -1,9 +1,7 @@
 #ifndef _EXTERN_H
 #define _EXTERN_H
 
-#include "event_bus.h"
-#include "events.h"
-
+#include "event_bus.hpp"
 #include "renderer.h"
 
 /*
