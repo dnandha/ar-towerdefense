@@ -1,26 +1,11 @@
 #ifndef _EVENT_BUS_H
 #define _EVENT_BUS_H
 
+#include "events.h"
+
 #include <list>
 #include <typeindex>
 #include <unordered_map>
-
-/*
- *
- */
-class Event {
- public:
-  Event();
-
-  // DONT DELETE: virtual member is important for typeid operator behaviour
-  virtual ~Event() {}
-
-  bool GetCanceled();
-  void SetCanceled(bool canceled);
-
- private:
-  bool _canceled;
-};
 
 /*
  *
@@ -73,46 +58,56 @@ class EventRegistration {
  */
 class EventBus {
  private:
-  static EventBus *_instance;
   typedef std::list<EventRegistration *> Registrations;
   typedef std::unordered_map<std::type_index, std::list<EventRegistration *> *>
       TypeMap;
-
   TypeMap _handlers;
 
   /* Private constructor to prevent instancing. */
-  EventBus();
+  EventBus() {}
+  EventBus(EventBus const&) = delete;
+  void operator=(EventBus const&) = delete;
 
  public:
-  static EventBus *GetInstance();
+
+  static EventBus& GetInstance() {
+      static EventBus instance;
+      return instance;
+  }
 
   template <class T>
   static EventRegistration *const AddHandler(EventHandler<T> &handler) {
-    EventBus *instance = GetInstance();
-
     // Fetch the list of event pairs unique to this event type
-    Registrations *registrations = instance->_handlers[typeid(T)];
+    Registrations *registrations = GetInstance()._handlers[typeid(T)];
 
-    // Create a new collection instance for this type if it hasn't been created
-    // yet
     if (registrations == nullptr) {
       registrations = new Registrations();
-      instance->_handlers[typeid(T)] = registrations;
+      GetInstance()._handlers[typeid(T)] = registrations;
     }
 
-    // Create a new EventPair instance for this registration.
-    // This will group the handler, sender, and registration object into the
-    // same class
-    EventRegistration *registration =
-        new EventRegistration(static_cast<void *>(&handler), registrations);
+    EventRegistration* registration =
+        new EventRegistration(static_cast<void*>(&handler), registrations);
 
-    // Add the registration object to the collection
     registrations->push_back(registration);
 
     return registration;
   }
 
-  static void FireEvent(Event &e);
+  static void FireEvent(Event &e) {
+      Registrations* registrations = GetInstance()._handlers[typeid(e)];
+
+      if (registrations == nullptr) {
+        return;
+      }
+
+      for (auto &reg : *registrations) {
+        // This is where some magic happens. The void * handler is statically cast
+        // to an event handler of generic type Event and dispatched. The HandleEvent
+        // function will then do a dynamic cast to the correct event type so the
+        // matching OnEvent method can be called
+        static_cast<EventHandler<Event> *>(reg->GetHandler())->HandleEvent(e);
+      }
+  }
 };
 
 #endif

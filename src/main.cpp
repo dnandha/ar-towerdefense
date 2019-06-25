@@ -1,7 +1,8 @@
 #include "game.h"
-#include "entities.h"
+#include "unit.h"
+#include "tower.h"
 #include "scene.h"
-#include "events.h"
+#include "event_bus.hpp"
 #include "spawner.hpp"
 
 #include <iostream>
@@ -23,7 +24,7 @@ void initialize() {
 int main() {
     // create rendering window
     Size2i winsize(800, 600);
-    Renderer renderer(winsize, {"packs/Sinbad.zip"});
+    Renderer renderer(winsize, {"packs/Sinbad.zip", "packs/dragon.zip"});
 
     // create game objects
     Player player("Mongo");
@@ -32,20 +33,24 @@ int main() {
 
     // spawn mobs using spawner
     Spawner<MobSinbad> mobspawner;
-    mobspawner.Spawn(10);
+    Scene::GetInstance().AddEntity(&mobspawner);
+
+    // spawn tower // todo: spawner wasn't intended for non-unit types
+    Spawner<DragonTower> towerspawner;
+    towerspawner.Spawn();
 
     // generate and start game
     game.Generate();
     game.Start();
 
     // start time and enter game loop
-    double start_time = std::time(nullptr);
+    double delta;
     while (game.state != State::Ended && renderer.WaitKey(1) != 27) {
         // detect markers
         detector.Detect();
         // update and render scene
-        for (Unit* ent : Scene::GetInstance().GetEntities<Unit>()) {
-            ent->Update((std::time(nullptr) - start_time)/1000.0);
+        for (auto* ent : Scene::GetInstance().GetEntities()) {
+            ent->Update(Clock::GetInstance().Tick());
             ent->Render(&renderer);
         }
     }

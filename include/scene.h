@@ -2,26 +2,27 @@
 #define _SCENE_H
 
 #include "common.h"
-#include "entities.h"
+#include "entity.h"
 
 /*
  * Level/GameState/Scene
  * Uses Singleton pattern
  */
 class Scene : public EventHandler<MarkersDetectedEvent>
+//                ,public EventHandler<UnitKilledEvent>
 {
   EventRegistration* _registration;
   Scene() {
       _registration = EventBus::AddHandler(*this);
   }
-
   Scene(Scene const&) = delete;
   void operator=(Scene const&) = delete;
 
-  std::list<GameEntity*> _gameEntities;
+  std::list<Entity*> _entities;
 
 protected:
   void OnEvent(MarkersDetectedEvent& e);
+  //void OnEvent(UnitKilledEvent& e);
 
 public:
   static Scene& GetInstance() {
@@ -31,7 +32,7 @@ public:
 
   ~Scene() {
       // remove all entities
-      for (auto* ent : _gameEntities) {
+      for (auto* ent : _entities) {
           delete ent;
       }
       // remove event handlers
@@ -42,16 +43,16 @@ public:
    * Adds entity to scene (make sure entity doesn't get destroyed preliminary)
    *
    */
-  void AddEntity(GameEntity* entity) {
-    _gameEntities.push_back(entity);
+  void AddEntity(Entity* entity) {
+    _entities.push_back(entity);
   }
 
-  //void RemoveEntity(GameEntity& entity) {
-  //  _gameEntities.remove(entity);
+  //void RemoveEntity(Entity& entity) {
+  //  _entities.remove(entity);
   //}
 
-  std::list<GameEntity*> GetEntities() {
-    return _gameEntities;
+  std::list<Entity*> GetEntities() {
+    return _entities;
   }
 
   template <class T>
@@ -59,7 +60,7 @@ public:
     std::list<T*> matches;
 
     T* c;
-    for (GameEntity* ent : _gameEntities) {
+    for (Entity* ent : _entities) {
       if ((c = dynamic_cast<T*>(ent)) != nullptr) {
         matches.push_back(c);
       }

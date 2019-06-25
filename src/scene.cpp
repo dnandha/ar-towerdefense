@@ -6,6 +6,8 @@
 //        renderer->AddEntity(mob.GetName(), mob.GetMeshName());
 //    }
 //}
+//void Scene::OnEvent(UnitKilledEvent& e) {
+//}
 
 void Scene::OnEvent(MarkersDetectedEvent& e) {
     if (e.GetMockArg() == "mock") {

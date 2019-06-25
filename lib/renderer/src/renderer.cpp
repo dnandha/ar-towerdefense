@@ -30,12 +30,20 @@ void Renderer::AddEntity(const std::string& name,
     m_winscene->createEntity(name, meshname, Vec3i(0, 0, 0), m_vrot);
 }
 
+void Renderer::RemoveEntity(const std::string& name) {
+    m_winscene->removeEntity(name);
+}
+
 void Renderer::SetEntityPosition(const std::string& name, std::vector<double> pos) {
     m_winscene->setEntityPose(name, Vec3d(pos[0], pos[1], pos[2]), m_vrot);
 }
 
-void Renderer::SetEntityAnimation(const std::string& name, const std::string& animname) {
+void Renderer::PlayEntityAnimation(const std::string& name, const std::string& animname) {
     m_winscene->playEntityAnimation(name, animname);
+}
+
+void Renderer::StopEntityAnimation(const std::string& name, const std::string& animname) {
+    m_winscene->stopEntityAnimation(name, animname);
 }
 
 //void Renderer::SetEntityPoses() {
