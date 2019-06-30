@@ -1,8 +1,4 @@
-# Setting lib dirs for windows
-if (WIN32)
-set(OpenCV_DIR "/Users/Benja/Desktop/OpenCV")
-set(Eigen3_DIR "/Program Files/Eigen/cmake")
-endif()
+
 
 find_package(OpenCV REQUIRED) 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
