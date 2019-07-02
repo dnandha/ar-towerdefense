@@ -12,7 +12,7 @@ class Renderer {
   Vec3d m_vrot;
 
   public:
-    Renderer(Size2i, std::list<std::string> resources);
+    Renderer(std::vector<int> size, std::list<std::string> resources);
 
     void AddEntity(const std::string& name,
                 const std::string& meshname);

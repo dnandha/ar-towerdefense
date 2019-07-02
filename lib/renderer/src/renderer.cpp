@@ -1,9 +1,11 @@
 #include "renderer.h"
 
-Renderer::Renderer(Size imsize, std::list<std::string> resources) {
+Renderer::Renderer(std::vector<int> size, std::list<std::string> resources) {
     for (const auto& res : resources) {
         ovis::addResourceLocation(res);
     }
+
+    Size2i imsize(size[0], size[1]);
 
     m_winscene = ovis::createWindow(
           String("game"),

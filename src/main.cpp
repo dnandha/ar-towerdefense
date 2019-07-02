@@ -23,8 +23,8 @@ void initialize() {
  */
 int main() {
     // create rendering window
-    Size2i winsize(800, 600);
-    Renderer renderer(winsize, {"packs/Sinbad.zip", "packs/dragon.zip"});
+    WinSize winsize = {800, 600};
+    Renderer renderer(winsize, {"packs/Sinbad.zip", "packs/tower.zip"});
 
     // create game objects
     Player player("Mongo");

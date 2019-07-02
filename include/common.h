@@ -5,6 +5,7 @@
 #include <chrono>
 
 typedef std::vector<double> Position;
+typedef std::vector<int> WinSize;
 
 namespace chrono {
 
