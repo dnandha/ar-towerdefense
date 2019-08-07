@@ -3,45 +3,36 @@
 #include "mesh.h"
 #include "path_detector.h"
 
-static void detectPath(Mat frame) {
-  vector<Point2f> pathCorners;
+void detectPath(cv::Mat frame) {
+  double range = 25;
+  int maxCorners = 1000;
+  double qualityLevel = 0.001;
+  int blockSize = 6;
+  bool useHarris = true;
+  double k = 0.01;
 
-  // get necessary data form image
+  std::vector<cv::Point2f> pathCorners;
   PathDetector detector;
+  pathCorners = detector.Cornerdetection(frame, range, maxCorners, qualityLevel,
+                                         blockSize, useHarris, k);
 
-  Mat grayscaleImage = detector.RangeThresholdBinary(frame);
+  if (pathCorners.size() > 2) {
+    Mesh mesh(pathCorners);
 
-  imshow("Grayscale image", grayscaleImage);
+    PathFinder pf(mesh._polygons, mesh._vertices);
+    Graph graph = pf.GetGraph();
+    detector.DrawGraph(frame, graph);
+    cv::imshow("graph", frame);
 
-  pathCorners = detector.Cornerdetection(grayscaleImage);
-
-  // preparing mesh input
-  Size size = detector.FrameSize();
-  vector<Vertex> vertices;
-  vector<Vertex> cornerVertices;
-  cornerVertices.push_back({(double)size.width, (double)size.height, 0.0});
-  cornerVertices.push_back({(double)size.width, 0.0, 0.0});
-  cornerVertices.push_back({0.0, (double)size.height, 0.0});
-  cornerVertices.push_back({0.0, 0.0, 0.0});
-  int c;
-  for (c = 0; c < pathCorners.size(); c++) {
-    vertices.push_back({pathCorners[c].x, pathCorners[c].y, 0.0});
+    float C = pf.DetermineExplorationRate(frame);
+    std::cout << C;
+    std::vector<std::vector<cv::Point2f>> paths = pf.ComputeNPaths(C, 10);
+    for (int p = 0; p < paths.size(); p++) {
+      cv::Scalar colour((p + 1) * 25, 0, 0);
+      detector.DrawPath(frame, paths[p], colour);
+      cv::imshow("path", frame);
+    }
   }
-
-  // create Mesh
-  Mesh mesh(vertices, cornerVertices, size.width, size.height);
-
-  // adjust mesh data and create .obj-file
-  mesh.polygons.clear();
-  mesh.CreatePolygonsRelativToIndividualVertices();
-  // mesh.MakeObjFile(imagename + "_Object.obj");
-
-  // display mesh data on image
-  Mat pathImage = detector.PathMeshInImg(frame, mesh);
-  imshow("Path image", pathImage);
-
-  Mat centroidImage = detector.PathCentroids(frame, mesh);
-  imshow("Centroid image", centroidImage);
 }
 
 /*
@@ -52,15 +43,19 @@ int main() {
   ImageProcessor improc;
 
   while (cam.Grab()) {
-    Mat image = cam.GetFrame();
+    cv::Mat image = cam.GetFrame();
     vector<Marker> markers = improc.DetectMarkers(image);
 
-    Mat markerImage = improc.DrawMarkers(image, markers);
+    cv::Mat markerImage = improc.DrawMarkers(image, markers);
     imshow("marker image", markerImage);
 
     if (improc.ContainsBorderMarkers(markers)) {
-      Mat warpedPaperImage = improc.WarpPaperImage(image, markers, 900, 600);
+      cv::Mat warpedPaperImage =
+          improc.WarpPaperImage(image, markers, 900, 600);
       imshow("warped image", warpedPaperImage);
+
+      cv::Point2f testPoint(300, 300);
+      cv::Point2f imagePoint = improc.SetInPerspective(testPoint);
 
       detectPath(warpedPaperImage);
     }

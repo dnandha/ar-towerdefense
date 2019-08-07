@@ -18,7 +18,6 @@
 
 using namespace Eigen;
 using namespace std;
-using namespace cv;
 
 /*
  *  Casts CV vectors
@@ -55,9 +54,9 @@ enum MarkerCategory {
  */
 struct Marker {
   MarkerCategory category;
-  vector<Point2f> corners;
-  Vec3d tvec;
-  Vec3d rvec;
+  vector<cv::Point2f> corners;
+  cv::Vec3d tvec;
+  cv::Vec3d rvec;
 };
 
 /*
@@ -66,23 +65,28 @@ struct Marker {
 class ImageProcessor {
  public:
   ImageProcessor();
-  vector<Marker> DetectMarkers(Mat image);
-  Mat GetDistCoeffs();
-  Mat DrawMarkers(Mat image, vector<Marker> markers);
+  vector<Marker> DetectMarkers(cv::Mat image);
+  cv::Mat GetDistCoeffs();
+  cv::Mat DrawMarkers(cv::Mat image, vector<Marker> markers);
   bool ContainsBorderMarkers(vector<Marker> markers);
-  Mat WarpPaperImage(Mat image, vector<Marker> markers, int warpedImageWidth,
-                     int warpedImageHeight);
+  cv::Mat WarpPaperImage(cv::Mat image, vector<Marker> markers,
+                         int warpedImageWidth, int warpedImageHeight);
+  cv::Point2f SetInPerspective(cv::Point2f point);
   Marker GetMarkerOfCategory(vector<Marker> markers, MarkerCategory category);
 
  private:
-  Mat _camMatrix, _distCoeffs;
-  Ptr<aruco::Dictionary> _dictionary;
-  Ptr<aruco::DetectorParameters> _detectorParams;
+  cv::Mat _camMatrix, _distCoeffs;
+  cv::Ptr<cv::aruco::Dictionary> _dictionary;
+  cv::Ptr<cv::aruco::DetectorParameters> _detectorParams;
   float _markerLength;
+  vector<cv::Point2f> _paperBorders;
+  cv::Mat _homography;
 
-  vector<Point2f> CalcPaperBorders(vector<Marker> markers);
-  vector<Point2i> Vertices2ConvexHull(vector<Point2f> vertices);
-  Mat CutMarker(Mat image, vector<Point2f> vertices);
+  cv::Mat ChangePerspective(cv::Mat image, vector<cv::Point2f> srcCorners,
+                            vector<cv::Point2f> destCorners);
+  vector<cv::Point2f> CalcPaperBorders(vector<Marker> markers);
+  vector<cv::Point2i> Vertices2ConvexHull(vector<cv::Point2f> vertices);
+  cv::Mat CutMarker(cv::Mat image, vector<cv::Point2f> vertices);
 };
 
 #endif

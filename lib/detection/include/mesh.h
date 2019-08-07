@@ -1,6 +1,4 @@
-#ifndef _MESH_H
-#define _MESH_H
-
+#pragma once
 #include <math.h>
 #include <stdint.h>
 #include <fstream>
@@ -9,9 +7,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
-
-using namespace cv;
-using namespace std;
+#include "delaunator.hpp"
 
 struct Vertex {
   double x, y, z;
@@ -28,24 +24,27 @@ struct Polygon {
 
 class Mesh {
  public:
-  Mesh(vector<Vertex> vertices, vector<Vertex> cornerVertices, int xmax,
-       int ymax, int xmin = 0, int ymin = 0);
+  Mesh(std::vector<cv::Point2f> points);
   virtual ~Mesh();
-  void MakeObjFile(string name);
+  void MakeObjFile(std::string name);
   void CreatePolygonsRelativToIndividualVertices();
-  void CreatePolygonsRelativToIndividualVerticesWithRange(int range);
-  vector<Vertex> vertices, cornerVertices;
-  vector<Polygon> polygons;
+  void CreatePolygonsRelativToIndividualVerticesWithRange(double range);
+  void SortVertices();
+  void WriteVertTxt();
+  std::vector<Vertex> _vertices;
+  std::vector<Polygon> _polygons;
 
  private:
   int xmax, xmin, ymax, ymin, vertexCount;
+  int ComputeVertexClosestToBorder();
   int ComputeCentroidClosestToBorder();
-  void FindTwoClosestVertices(int index);
-  void FindVerticesInRange(int index, int range);
-  vector<double> ComputeVertexDistancesTo(int vertex_Index);
+  void CreatePolygonWithTwoClosestVertices(int index);
+  void CreatePolygonsWithVerticesInRange(int index, double range);
+  std::vector<double> ComputeVertexDistancesTo(int vertex_Index);
   void ComputeCentroids();
   void OrderPolygonsAfterCentroiddistances();
-  vector<double> ComputeCentroidDistances(int centroid_Index, vector<Polygon>);
+  std::vector<double> ComputeCentroidDistances(int centroid_Index,
+                                               std::vector<Polygon>);
+  bool contains(Polygon polygon);
+  bool tooLong(Polygon polygon);
 };
-
-#endif

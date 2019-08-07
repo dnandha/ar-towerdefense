@@ -27,10 +27,10 @@ Cam::Cam(int camId) {
 
 bool Cam::Grab() { return _cap.grab(); }
 
-Mat Cam::GetFrame() {
-  Mat image;
+cv::Mat Cam::GetFrame() {
+  cv::Mat image;
   _cap.retrieve(image);
 
-  waitKey(10);
+  cv::waitKey(10);
   return image;
 }

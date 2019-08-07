@@ -1,137 +1,152 @@
 #include "path_detector.h"
 
-Size PathDetector::FrameSize() { return _frame.size(); }
+PathDetector::PathDetector() {}
 
-Mat PathDetector::RangeThresholdBinary(Mat frame, Scalar lowerBoundary,
-                                       Scalar upperBoundary) {
-  Mat grayscaleImage;
-  inRange(frame, lowerBoundary, upperBoundary, grayscaleImage);
+PathDetector::~PathDetector() {}
 
-  return grayscaleImage;
+void PathDetector::RangeThresholdBinary(cv::Mat* frame_pointer,
+                                        cv::Scalar lowerBoundary,
+                                        cv::Scalar upperBoundary) {
+  inRange(*frame_pointer, lowerBoundary, upperBoundary, *frame_pointer);
 }
 
-void PathDetector::Gaussian() {
+void PathDetector::Gaussian(cv::Mat* frame_pointer) {
   // Gauss
-  GaussianBlur(_frame, _modifiedFrame, Size(3, 3), 0, 0, 4);
-  cvtColor(_frame, _modifiedFrame, COLOR_BGR2GRAY);
-  _currentMask = "Gauss";
+  GaussianBlur(*frame_pointer, *frame_pointer, cv::Size(3, 3), 0, 0, 4);
+  cvtColor(*frame_pointer, *frame_pointer, cv::COLOR_BGR2GRAY);
 }
 
-void PathDetector::Laplace() {
+void PathDetector::Laplace(cv::Mat* frame_pointer) {
   // Gauss->Laplace->Edgedetection
-  Gaussian();
+  Gaussian(frame_pointer);
 
-  Mat help;
+  cv::Mat help;
   // Laplace
-  Laplacian(_modifiedFrame, help, 3, 1, 1.0, 0.0, 4);
-  convertScaleAbs(help, _modifiedFrame);
-  _currentMask = "Laplace auf Gauss";
+  Laplacian(*frame_pointer, help, 3, 1, 1.0, 0.0, 4);
+  convertScaleAbs(help, *frame_pointer);
 }
 
-void PathDetector::CannyTwo() {
-  Canny(_frame, _modifiedFrame, 50, 200, 3);
-  _currentMask = "Canny";
-}
+void PathDetector::CannyTwo(cv::Mat frame) { Canny(frame, frame, 50, 200, 3); }
 
-void PathDetector::DrawHoughLines(int threshold, double minLineLength,
-                                  double maxLineGap) {
+std::vector<cv::Point2f> PathDetector::DrawHoughLines(cv::Mat frame,
+                                                      int threshold,
+                                                      double minLineLength,
+                                                      double maxLineGap) {
+  cv::Mat help = frame.clone();
   // Canny-> HoughLines
-  CannyTwo();
 
-  Mat help;
+  Canny(help, frame, 50, 200, 3);
 
-  cvtColor(_modifiedFrame, help, COLOR_GRAY2BGR);
+  cvtColor(frame, help, cv::COLOR_GRAY2BGR);
 
   //#if 0
 
-  vector<Vec4i> lines;
+  std::vector<cv::Point2f> corners;
+  std::vector<cv::Vec4i> lines;
 
-  HoughLinesP(_modifiedFrame, lines, 1, 3.1415 / 180, threshold, minLineLength,
+  HoughLinesP(frame, lines, 1, 3.1415 / 180, threshold, minLineLength,
               maxLineGap);
 
   for (size_t i = 0; i < lines.size(); i++) {
-    Vec4i l = lines[i];
-    line(help, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0, 0, 255), 3);
+    cv::Vec4i l = lines[i];
+    line(help, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]),
+         cv::Scalar(0, 0, 255), 3);
+    corners.push_back({(float)l[0], (float)l[1]});
+    corners.push_back({(float)l[2], (float)l[3]});
   }
-
-  _modifiedFrame = help.clone();
-  _currentMask = "HoughLines auf Canny";
-}
-
-vector<Point2f> PathDetector::Cornerdetection(Mat frame, int maxCorners,
-                                              double qualityLevel,
-                                              double minDistance, int blockSize,
-                                              bool useHarrisDetector,
-                                              double k) {
-  RNG rng(12345);
-  Mat help;
-  vector<Point2f> corners;
-
-  // Cornerdetection
-  goodFeaturesToTrack(frame, corners, maxCorners, qualityLevel, minDistance,
-                      Mat(), blockSize, useHarrisDetector, k);
+  imshow("Hough", help);
+  frame = help.clone();
 
   return corners;
 }
 
-void PathDetector::AdaptiveThreshold() {
-  Mat help;
-  cvtColor(_frame, help, COLOR_BGR2GRAY);
+std::vector<cv::Point2f> PathDetector::Cornerdetection(
+    cv::Mat frame, double minDistance, int maxCorners, double qualityLevel,
+    int blockSize, bool useHarrisDetector, double k) {
+  cv::Mat help;
+  cvtColor(frame, help, cv::COLOR_BGR2GRAY);
+  inRange(help, cv::Scalar(0, 0, 0), cv::Scalar(100, 100, 100), help);
+  Canny(help, frame, 50, 200, 3);
+
+  cv::imshow("TEST", frame);
+  std::vector<cv::Point2f> corners;
+  goodFeaturesToTrack(frame, corners, maxCorners, qualityLevel, minDistance,
+                      cv::Mat(), blockSize, useHarrisDetector, k);
+
+  return corners;
+}
+
+void PathDetector::AdaptiveThreshold(cv::Mat* frame_pointer) {
+  cv::Mat help;
+  cvtColor(*frame_pointer, help, cv::COLOR_BGR2GRAY);
   // Adaptive Threshhold
-  adaptiveThreshold(help, _modifiedFrame, 200, ADAPTIVE_THRESH_MEAN_C,
-                    THRESH_BINARY, 3, 2);
-  _currentMask = "Adaptive Threshold";
+  adaptiveThreshold(help, *frame_pointer, 200, cv::ADAPTIVE_THRESH_MEAN_C,
+                    cv::THRESH_BINARY, 3, 2);
 }
 
-void PathDetector::AdaptiveThresholdBinary() {
+void PathDetector::AdaptiveThresholdBinary(cv::Mat* frame_pointer) {
   // Adaptive ThreshholdXBin�r
-  AdaptiveThreshold();
-  Mat help, bnw;
-  inRange(_frame, Scalar(0, 0, 0), Scalar(75, 75, 75), bnw);
-  help = _modifiedFrame.mul(bnw);
-  _modifiedFrame = help.clone();
-  _currentMask = "Adaptive Threshold Binary";
+  AdaptiveThreshold(frame_pointer);
+  cv::Mat help, bnw;
+  cv::Mat frame = *frame_pointer;
+
+  inRange(*frame_pointer, cv::Scalar(0, 0, 0), cv::Scalar(75, 75, 75), bnw);
+  help = frame.mul(bnw);
+
+  frame_pointer = &frame;
+  *frame_pointer = help.clone();
 }
 
-Mat PathDetector::PathMeshInImg(Mat frame, Mesh mesh) {
-  Mat pathImage = frame.clone();
-  RNG rng(12345);
-  Scalar color;
-  for (int p = 0; p < mesh.polygons.size(); p++) {
-    color =
-        Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
-    line(pathImage,
-         Point(mesh.vertices[mesh.polygons[p].indexA].x,
-               mesh.vertices[mesh.polygons[p].indexA].y),
-         Point(mesh.vertices[mesh.polygons[p].indexB].x,
-               mesh.vertices[mesh.polygons[p].indexB].y),
+void PathDetector::PathMeshInImg(Mesh mesh, cv::Mat frame) {
+  cv::RNG rng(12345);
+  cv::Scalar color;
+  for (int p = 0; p < mesh._polygons.size(); p++) {
+    color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
+                       rng.uniform(0, 255));
+    line(frame,
+         cv::Point(mesh._vertices[mesh._polygons[p].indexA].x,
+                   mesh._vertices[mesh._polygons[p].indexA].y),
+         cv::Point(mesh._vertices[mesh._polygons[p].indexB].x,
+                   mesh._vertices[mesh._polygons[p].indexB].y),
          color);
-    line(pathImage,
-         Point(mesh.vertices[mesh.polygons[p].indexB].x,
-               mesh.vertices[mesh.polygons[p].indexB].y),
-         Point(mesh.vertices[mesh.polygons[p].indexC].x,
-               mesh.vertices[mesh.polygons[p].indexC].y),
+    line(frame,
+         cv::Point(mesh._vertices[mesh._polygons[p].indexB].x,
+                   mesh._vertices[mesh._polygons[p].indexB].y),
+         cv::Point(mesh._vertices[mesh._polygons[p].indexC].x,
+                   mesh._vertices[mesh._polygons[p].indexC].y),
          color);
-    line(pathImage,
-         Point(mesh.vertices[mesh.polygons[p].indexC].x,
-               mesh.vertices[mesh.polygons[p].indexC].y),
-         Point(mesh.vertices[mesh.polygons[p].indexA].x,
-               mesh.vertices[mesh.polygons[p].indexA].y),
+    line(frame,
+         cv::Point(mesh._vertices[mesh._polygons[p].indexC].x,
+                   mesh._vertices[mesh._polygons[p].indexC].y),
+         cv::Point(mesh._vertices[mesh._polygons[p].indexA].x,
+                   mesh._vertices[mesh._polygons[p].indexA].y),
          color);
   }
-
-  return pathImage;
 }
 
-Mat PathDetector::PathCentroids(Mat frame, Mesh mesh) {
-  Mat centroidImage = frame.clone();
-  for (int p = 0; p < mesh.polygons.size() - 1; p++) {
-    line(
-        centroidImage,
-        Point(mesh.polygons[p].centroid.x, mesh.polygons[p].centroid.y),
-        Point(mesh.polygons[p + 1].centroid.x, mesh.polygons[p + 1].centroid.y),
-        Scalar(0, 0, 255));
+void PathDetector::PathCentroids(Mesh mesh, cv::Mat frame) {
+  for (int p = 0; p < mesh._polygons.size() - 1; p++) {
+    line(frame,
+         cv::Point(mesh._polygons[p].centroid.x, mesh._polygons[p].centroid.y),
+         cv::Point(mesh._polygons[p + 1].centroid.x,
+                   mesh._polygons[p + 1].centroid.y),
+         cv::Scalar(0, 0, 255));
   }
+}
 
-  return centroidImage;
+void PathDetector::DrawPath(cv::Mat frame, std::vector<cv::Point2f> path,
+                            cv::Scalar colour) {
+  for (int p = 1; p < path.size(); p++) {
+    line(frame, path[p - 1], path[p], colour);
+  }
+}
+
+void PathDetector::DrawGraph(cv::Mat frame, Graph graph) {
+  for (int n = 0; n < graph.nodes.size(); n++) {
+    Node node = graph.nodes[n];
+    for (int e = 0; e < node.edges.size(); e++) {
+      line(frame, node.point, graph.nodes[node.edges[e].nodeIndex].point,
+           cv::Scalar(0, 0, 255));
+    }
+  }
 }

@@ -10,24 +10,24 @@ struct SortX {
 
 ImageProcessor::ImageProcessor() {
   // calibration results
-  _camMatrix =
-      (Mat_<double>(3, 3) << 9.5688579936159397e+02, 0., 6.5204540592076330e+02,
-       0., 9.5245103032304894e+02, 3.6538198893031625e+02, 0., 0., 1.);
-  _distCoeffs =
-      (Mat_<double>(5, 1) << -5.8248455454749333e-02, 1.5857181599691350e-02,
-       -7.2418305586809265e-03, 5.7471593045364724e-03, 0.);
+  _camMatrix = (cv::Mat_<double>(3, 3) << 9.5688579936159397e+02, 0.,
+                6.5204540592076330e+02, 0., 9.5245103032304894e+02,
+                3.6538198893031625e+02, 0., 0., 1.);
+  _distCoeffs = (cv::Mat_<double>(5, 1) << -5.8248455454749333e-02,
+                 1.5857181599691350e-02, -7.2418305586809265e-03,
+                 5.7471593045364724e-03, 0.);
 
   // dictionary: DICT_4X4_50=0, DICT_4X4_100=1, DICT_4X4_250=2,"
   // "DICT_4X4_1000=3, DICT_5X5_50=4, DICT_5X5_100=5, DICT_5X5_250=6,
   // DICT_5X5_1000=7, " "DICT_6X6_50=8, DICT_6X6_100=9, DICT_6X6_250=10,
   // DICT_6X6_1000=11, DICT_7X7_50=12," "DICT_7X7_100=13, DICT_7X7_250=14,
-  // DICT_7X7_1000=15, DICT_ARUCO_ORIGINAL = 16," "DICT_APRILTAG_16h5=17,
+  // DICT_7X7_1000=15, DICT_cv::aruco_ORIGINAL = 16," "DICT_APRILTAG_16h5=17,
   // DICT_APRILTAG_25h9=18, DICT_APRILTAG_36h10=19, DICT_APRILTAG_36h11=20}
-  _dictionary =
-      aruco::getPredefinedDictionary(aruco::PREDEFINED_DICTIONARY_NAME(0));
+  _dictionary = cv::aruco::getPredefinedDictionary(
+      cv::aruco::PREDEFINED_DICTIONARY_NAME(0));
 
   // using standard detector parametes
-  _detectorParams = aruco::DetectorParameters::create();
+  _detectorParams = cv::aruco::DetectorParameters::create();
   // Corner refinement method (0: None, 1: Subpixel, 2:contour, 3: AprilTag 2)
   _detectorParams->cornerRefinementMethod = 2;
 
@@ -35,31 +35,31 @@ ImageProcessor::ImageProcessor() {
 }
 
 /*
- * Returns distortion coefficients matrix
+ * Returns distortion coefficients cv::Matrix
  */
-Mat ImageProcessor::GetDistCoeffs() { return _distCoeffs; }
+cv::Mat ImageProcessor::GetDistCoeffs() { return _distCoeffs; }
 
 /*
  * Detects marker categories, corners, and poses
  */
-vector<Marker> ImageProcessor::DetectMarkers(Mat image) {
+vector<Marker> ImageProcessor::DetectMarkers(cv::Mat image) {
   // marker ID's
   vector<int> ids;
   // lists of corners of detected markers (clockwise order)
-  vector<vector<Point2f>> corners, rejected;
+  vector<vector<cv::Point2f>> corners, rejected;
   // rotation and translation vectors respectively for each of the markers in
   // corners
-  vector<Vec3d> rvecs, tvecs;
+  vector<cv::Vec3d> rvecs, tvecs;
 
   vector<Marker> markers;
 
-  // detect markers and estimate pose
-  aruco::detectMarkers(image, _dictionary, corners, ids, _detectorParams,
-                       rejected);
+  // detect markers and esticv::Mate pose
+  cv::aruco::detectMarkers(image, _dictionary, corners, ids, _detectorParams,
+                           rejected);
 
   if (ids.size() > 0) {
-    aruco::estimatePoseSingleMarkers(corners, _markerLength, _camMatrix,
-                                     _distCoeffs, rvecs, tvecs);
+    cv::aruco::estimatePoseSingleMarkers(corners, _markerLength, _camMatrix,
+                                         _distCoeffs, rvecs, tvecs);
 
     for (int i = 0; i < ids.size(); i++) {
       Marker marker;
@@ -78,11 +78,11 @@ vector<Marker> ImageProcessor::DetectMarkers(Mat image) {
 /*
  * Draws marker edges and poses on image
  */
-Mat ImageProcessor::DrawMarkers(Mat image, vector<Marker> markers) {
+cv::Mat ImageProcessor::DrawMarkers(cv::Mat image, vector<Marker> markers) {
   if (markers.size() > 0) {
     vector<int> ids;
-    vector<vector<Point2f>> corners;
-    vector<Vec3d> rvecs, tvecs;
+    vector<vector<cv::Point2f>> corners;
+    vector<cv::Vec3d> rvecs, tvecs;
 
     for (int i = 0; i < markers.size(); i++) {
       ids.push_back((int)markers[i].category);
@@ -91,14 +91,14 @@ Mat ImageProcessor::DrawMarkers(Mat image, vector<Marker> markers) {
       tvecs.push_back(markers[i].tvec);
     }
 
-    Mat imageCopy;
+    cv::Mat imageCopy;
     image.copyTo(imageCopy);
 
-    aruco::drawDetectedMarkers(imageCopy, corners, ids);
+    cv::aruco::drawDetectedMarkers(imageCopy, corners, ids);
 
     for (unsigned int i = 0; i < ids.size(); i++)
-      aruco::drawAxis(imageCopy, _camMatrix, _distCoeffs, rvecs[i], tvecs[i],
-                      _markerLength * 0.5f);
+      cv::aruco::drawAxis(imageCopy, _camMatrix, _distCoeffs, rvecs[i],
+                          tvecs[i], _markerLength * 0.5f);
     return imageCopy;
   }
   return image;
@@ -133,41 +133,51 @@ bool ImageProcessor::ContainsBorderMarkers(vector<Marker> markers) {
 /*
  * Removes perspective from with paper as ROI of the image
  */
-Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers,
-                                   int warpedImageWidth,
-                                   int warpedImageHeight) {
-  Mat imageCopy;
+cv::Mat ImageProcessor::WarpPaperImage(cv::Mat image, vector<Marker> markers,
+                                       int warpedImageWidth,
+                                       int warpedImageHeight) {
+  cv::Mat imageCopy;
   image.copyTo(imageCopy);
-
-  vector<Point2f> paperBorders = CalcPaperBorders(markers);
 
   Marker marker0 = GetMarkerOfCategory(markers, Border0);
   Marker marker1 = GetMarkerOfCategory(markers, Border1);
 
-  Mat cuttedMarker0Image = CutMarker(imageCopy, marker0.corners);
-  Mat cuttedMarker1Image = CutMarker(cuttedMarker0Image, marker1.corners);
+  _paperBorders = CalcPaperBorders(markers);
 
-  vector<Point2f> orgPaperBorders =
-      CastVector<Point2i, Point2f>(Vertices2ConvexHull(paperBorders));
+  vector<cv::Point2f> warpedPaperBorders;
+  warpedPaperBorders.push_back(cv::Point2i(0, 0));
+  warpedPaperBorders.push_back(cv::Point2i(warpedImageWidth, 0));
+  warpedPaperBorders.push_back(cv::Point2i(0, warpedImageHeight));
+  warpedPaperBorders.push_back(
+      cv::Point2i(warpedImageWidth, warpedImageHeight));
 
-  // sorting paper borders
-  sort(orgPaperBorders.begin(), orgPaperBorders.end(), mySortY);
-  sort(orgPaperBorders.begin(), orgPaperBorders.begin() + 2, mySortX);
-  sort(orgPaperBorders.begin() + 2, orgPaperBorders.end(), mySortX);
+  // cut markers out of image
+  cv::Mat cuttedMarker0Image = CutMarker(imageCopy, marker0.corners);
+  cv::Mat cuttedMarker1Image = CutMarker(cuttedMarker0Image, marker1.corners);
 
-  vector<Point2f> destPaperBorders;
+  return ChangePerspective(cuttedMarker1Image, _paperBorders,
+                           warpedPaperBorders);
+}
 
-  destPaperBorders.push_back(Point2i(0, 0));
-  destPaperBorders.push_back(Point2i(warpedImageWidth, 0));
-  destPaperBorders.push_back(Point2i(0, warpedImageHeight));
-  destPaperBorders.push_back(Point2i(warpedImageWidth, warpedImageHeight));
+cv::Point2f ImageProcessor::SetInPerspective(cv::Point2f point) {
+  cv::Mat H = _homography.inv();
+  cv::Mat pt1 = (cv::Mat_<double>(3, 1) << point.x, point.y, 1);
+  cv::Mat pt2 = H * pt1;
+  pt2 /= pt2.at<double>(2);
+  return cv::Point2f(pt2.at<double>(0, 0), pt2.at<double>(0, 1));
+}
 
-  Mat perspectiveMat =
-      getPerspectiveTransform(orgPaperBorders, destPaperBorders);
-
-  Mat warpedImage;
-  warpPerspective(cuttedMarker1Image, warpedImage, perspectiveMat,
-                  Size(900, 600));
+/*
+ *
+ */
+cv::Mat ImageProcessor::ChangePerspective(cv::Mat image,
+                                          vector<cv::Point2f> srcCorners,
+                                          vector<cv::Point2f> destCorners) {
+  _homography = getPerspectiveTransform(srcCorners, destCorners);
+  cv::Mat warpedImage;
+  float width = destCorners.back().x;
+  float height = destCorners.back().y;
+  warpPerspective(image, warpedImage, _homography, cv::Size(width, height));
 
   return warpedImage;
 }
@@ -175,15 +185,15 @@ Mat ImageProcessor::WarpPaperImage(Mat image, vector<Marker> markers,
 /*
  * Calcuates paper borders for markers with border categories
  */
-vector<Point2f> ImageProcessor::CalcPaperBorders(vector<Marker> markers) {
+vector<cv::Point2f> ImageProcessor::CalcPaperBorders(vector<Marker> markers) {
   if (markers.size() == 0 || !ContainsBorderMarkers(markers)) {
     throw 20;
   }
 
   Marker marker0 = GetMarkerOfCategory(markers, Border0);
   Marker marker1 = GetMarkerOfCategory(markers, Border1);
-  vector<Point2f> m0c = marker0.corners;
-  vector<Point2f> m1c = marker1.corners;
+  vector<cv::Point2f> m0c = marker0.corners;
+  vector<cv::Point2f> m1c = marker1.corners;
 
   typedef Eigen::Hyperplane<float, 2> Line2;  // Hyperplane in 2d is a line
   typedef Eigen::Vector2f Vec2;
@@ -206,26 +216,36 @@ vector<Point2f> ImageProcessor::CalcPaperBorders(vector<Marker> markers) {
   Vec2 intersection1 = m0c0c1.intersection(m1c0c3);
   Vec2 intersection2 = m0c0c3.intersection(m1c0c1);
 
-  Point2f intersecPoint1(intersection1[0], intersection1[1]);
-  Point2f intersecPoint2(intersection2[0], intersection2[1]);
+  cv::Point2f intersecPoint1(intersection1[0], intersection1[1]);
+  cv::Point2f intersecPoint2(intersection2[0], intersection2[1]);
 
-  vector<Point2f> paperBorders;
+  vector<cv::Point2f> paperBorders;
   paperBorders.push_back(m0c[0]);
   paperBorders.push_back(intersecPoint1);
   paperBorders.push_back(m1c[0]);
   paperBorders.push_back(intersecPoint2);
 
-  return paperBorders;
+  vector<cv::Point2f> orgPaperBorders =
+      CastVector<cv::Point2i, cv::Point2f>(Vertices2ConvexHull(paperBorders));
+
+  // sorting paper borders
+  sort(orgPaperBorders.begin(), orgPaperBorders.end(), mySortY);
+  sort(orgPaperBorders.begin(), orgPaperBorders.begin() + 2, mySortX);
+  sort(orgPaperBorders.begin() + 2, orgPaperBorders.end(), mySortX);
+
+  return orgPaperBorders;
 }
 
 /*
  * Get convex hull for vertices
  */
-vector<Point2i> ImageProcessor::Vertices2ConvexHull(vector<Point2f> vertices) {
-  // Cast Point2f to Point2i for fillConvexPoly function
-  vector<Point2i> vertices_i = CastVector<Point2f, Point2i>(vertices);
+vector<cv::Point2i> ImageProcessor::Vertices2ConvexHull(
+    vector<cv::Point2f> vertices) {
+  // Cast cv::Point2f to cv::Point2i for fillConvexPoly function
+  vector<cv::Point2i> vertices_i =
+      CastVector<cv::Point2f, cv::Point2i>(vertices);
 
-  vector<Point2i> hull;
+  vector<cv::Point2i> hull;
 
   convexHull(vertices_i, hull);
 
@@ -235,23 +255,23 @@ vector<Point2i> ImageProcessor::Vertices2ConvexHull(vector<Point2f> vertices) {
 /*
  * Draws white rectangle over marker
  */
-Mat ImageProcessor::CutMarker(Mat image, vector<Point2f> vertices) {
-  vector<Point2i> hull = Vertices2ConvexHull(vertices);
+cv::Mat ImageProcessor::CutMarker(cv::Mat image, vector<cv::Point2f> vertices) {
+  vector<cv::Point2i> hull = Vertices2ConvexHull(vertices);
 
   // Get bounding rect of hull
-  Rect bounding = boundingRect(hull);
+  cv::Rect bounding = boundingRect(hull);
   int upscale = 10;
 
   // Scale bounding rect up to prevent balck lines on the edges
-  Rect boundingScaled(bounding.x - upscale / 2, bounding.y - upscale / 2,
-                      bounding.width + upscale, bounding.height + upscale);
+  cv::Rect boundingScaled(bounding.x - upscale / 2, bounding.y - upscale / 2,
+                          bounding.width + upscale, bounding.height + upscale);
 
-  Point p1 = Point(boundingScaled.x, boundingScaled.y);
-  Point p2 = Point(boundingScaled.x + boundingScaled.width,
-                   boundingScaled.y + boundingScaled.height);
+  cv::Point p1 = cv::Point(boundingScaled.x, boundingScaled.y);
+  cv::Point p2 = cv::Point(boundingScaled.x + boundingScaled.width,
+                           boundingScaled.y + boundingScaled.height);
 
   // Draw white filled rect over marker
-  rectangle(image, p1, p2, Scalar(255, 255, 255), -1);
+  rectangle(image, p1, p2, cv::Scalar(255, 255, 255), -1);
 
   return image;
 }
