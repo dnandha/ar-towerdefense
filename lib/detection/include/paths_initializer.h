@@ -11,5 +11,8 @@ class PathsInitializer {
 
  private:
   Cam _cam;
-  bool DetectPath(cv::Mat frame);
+  std::vector<std::vector<cv::Point2f>> _paths;
+  bool DetectPaths(cv::Mat frame);
+  std::vector<std::vector<cv::Point2f>> SetPathsInPerspective(
+      ImageProcessor improc);
 };

@@ -16,11 +16,8 @@ std::vector<std::vector<cv::Point2f>> PathsInitializer::InitializePaths() {
       cv::Mat warpedPaperImage =
           improc.WarpPaperImage(image, markers, 900, 600);
 
-      cv::Point2f testPoint(300, 300);
-      cv::Point2f imagePoint = improc.SetInPerspective(testPoint);
-
       if (!pathFound) {
-        if (DetectPath(warpedPaperImage)) {
+        if (DetectPaths(warpedPaperImage)) {
           pathFound = true;
         }
       }
@@ -28,7 +25,7 @@ std::vector<std::vector<cv::Point2f>> PathsInitializer::InitializePaths() {
     if (pathFound) {
       for (auto &marker : markers) {
         if (marker.category == Start) {
-          cv::waitKey(0);
+          return SetPathsInPerspective(improc);
         }
         if (marker.category == Pause) {
           pathFound = false;
@@ -42,7 +39,7 @@ std::vector<std::vector<cv::Point2f>> PathsInitializer::InitializePaths() {
   cout << "Cant grab _camera image";
 }
 
-bool PathsInitializer::DetectPath(cv::Mat frame) {
+bool PathsInitializer::DetectPaths(cv::Mat frame) {
   double range = 25;
   int maxCorners = 1000;
   double qualityLevel = 0.001;
@@ -64,15 +61,30 @@ bool PathsInitializer::DetectPath(cv::Mat frame) {
 
     float C = pf.DetermineExplorationRate(frame);
     if (pf.ComputeNPaths(10 * C, 10)) {
+      _paths.clear();
       std::vector<std::vector<cv::Point2f>> paths = pf.GetPaths();
       for (int p = 0; p < paths.size(); p++) {
         cv::Scalar colour((p + 1) * 25, 0, 0);
         detector.DrawPath(frame, paths[p], colour);
         cv::namedWindow("path", 1);
         cv::imshow("path", frame);
+        _paths.push_back(paths[p]);
       }
       return true;
     }
   }
   return false;
+}
+
+std::vector<std::vector<cv::Point2f>> PathsInitializer::SetPathsInPerspective(
+    ImageProcessor improc) {
+  std::vector<std::vector<cv::Point2f>> pathsInPerspective;
+  for (auto &path : _paths) {
+    std::vector<cv::Point2f> pointsInPerspective;
+    for (auto &point : path) {
+      pointsInPerspective.push_back(improc.SetInPerspective(point));
+    }
+    pathsInPerspective.push_back(pointsInPerspective);
+  }
+  return pathsInPerspective;
 }
