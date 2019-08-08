@@ -68,7 +68,6 @@ std::vector<cv::Point2f> PathDetector::Cornerdetection(
   inRange(help, cv::Scalar(0, 0, 0), cv::Scalar(100, 100, 100), help);
   Canny(help, frame, 50, 200, 3);
 
-  cv::imshow("TEST", frame);
   std::vector<cv::Point2f> corners;
   goodFeaturesToTrack(frame, corners, maxCorners, qualityLevel, minDistance,
                       cv::Mat(), blockSize, useHarrisDetector, k);

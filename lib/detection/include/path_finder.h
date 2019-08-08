@@ -38,17 +38,19 @@ class PathFinder {
  public:
   PathFinder(std::vector<Polygon> polygons, std::vector<Vertex> vertices);
   ~PathFinder();
-  std::vector<std::vector<cv::Point2f>> ComputeNPaths(float C = 1.0, int N = 1);
+  bool ComputeNPaths(float C = 1.0, int N = 1);
   Graph GetGraph();
+  std::vector<std::vector<cv::Point2f>> GetPaths();
   float DetermineExplorationRate(cv::Mat frame);
 
  private:
   Graph _graph;
   int _startNode = 0;
   int _endNode = 0;
+  std::vector<std::vector<cv::Point2f>> _paths;
   void GetStartAndEnd();
   void ComputeHeuristics();
-  std::vector<cv::Point2f> ComputeSinglePath(int N, float C);
+  bool ComputeSinglePath(int N, float C);
   float DetermineDirection(std::vector<cv::Point2f> path, DirectedEdge edge);
   float CostFunction(Node node, float distanceTravelled, int N, float C);
   bool NotFinished(std::vector<FringeElement> fringe);

@@ -1,5 +1,9 @@
 #include "mesh.h"
 
+/* TODO:
+- there must be one mesh
+-  */
+
 Mesh::Mesh(std::vector<cv::Point2f> points) {
   std::vector<double> coords;
   for (int c = 0; c < points.size(); c++) {

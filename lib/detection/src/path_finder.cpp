@@ -42,17 +42,22 @@ PathFinder::PathFinder(std::vector<Polygon> polygons,
 
 PathFinder::~PathFinder() {}
 
-std::vector<std::vector<cv::Point2f>> PathFinder::ComputeNPaths(float C,
-                                                                int N) {
-  std::vector<std::vector<cv::Point2f>> paths;
+/*
+ * Compute N paths on graph. Returns false on failure.
+ */
+bool PathFinder::ComputeNPaths(float C, int N) {
+  _paths.clear();
   for (int n = 1; n <= N; n++) {
     Reset();
-    paths.push_back(ComputeSinglePath(n, C));
+    if (!ComputeSinglePath(n, C)) {
+      return false;
+    }
   }
-  return paths;
+  return true;
 }
 
 Graph PathFinder::GetGraph() { return _graph; }
+std::vector<std::vector<cv::Point2f>> PathFinder::GetPaths() { return _paths; }
 
 float PathFinder::DetermineExplorationRate(cv::Mat frame) {
   return ((frame.cols / 10) + (frame.rows / 10)) / 2;
@@ -77,7 +82,7 @@ void PathFinder::ComputeHeuristics() {
   }
 }
 
-std::vector<cv::Point2f> PathFinder::ComputeSinglePath(int n, float C) {
+bool PathFinder::ComputeSinglePath(int n, float C) {
   std::vector<FringeElement> fringe;
 
   Node currentNode = _graph.nodes[_startNode];
@@ -90,8 +95,13 @@ std::vector<cv::Point2f> PathFinder::ComputeSinglePath(int n, float C) {
   }
 
   while (NotFinished(fringe)) {
+    if (fringe.size() == 0) {
+      return false;
+    }
+
     int minIndex = 0;
     float minCost = std::numeric_limits<float>::max();
+    int closedCounter = 0;
     for (int f = 0; f < fringe.size(); f++) {
       Node potentialNext = _graph.nodes[fringe[f].edge.nodeIndex];
       if (!potentialNext.closed) {
@@ -99,6 +109,12 @@ std::vector<cv::Point2f> PathFinder::ComputeSinglePath(int n, float C) {
         if (cost < minCost) {
           minCost = cost;
           minIndex = f;
+        }
+      } else {
+        closedCounter++;
+        // check if all elements in fringe are closed
+        if (closedCounter >= fringe.size()) {
+          return false;
         }
       }
     }
@@ -117,8 +133,8 @@ std::vector<cv::Point2f> PathFinder::ComputeSinglePath(int n, float C) {
     _graph.nodes[fringe[minIndex].path.back()].timesVisited++;
     fringe.erase(fringe.begin() + minIndex);
   }
-
-  return CreatePath(fringe);
+  _paths.push_back(CreatePath(fringe));
+  return true;
 }
 
 float PathFinder::DetermineDirection(std::vector<cv::Point2f> path,
