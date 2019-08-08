@@ -3,13 +3,12 @@
 Cam::Cam(int camId) {
   cout << "INIT CAMERA..." << endl;
 
-  int cameraId = 1;
   int width = 1280;
   int height = 720;
 
   // Using GSTREAMER backend
   std::ostringstream desc;
-  desc << "v4l2src device=/dev/video" << cameraId << " ! videoconvert"
+  desc << "v4l2src device=/dev/video" << camId << " ! videoconvert"
        << " ! video/x-raw,width=" << width << ",height=" << height
        << " ! appsink";
   _cap.open(desc.str());
@@ -19,7 +18,7 @@ Cam::Cam(int camId) {
     return;
   }
 
-  cout << "\tCAMERA ID\t\t: " << cameraId << endl;
+  cout << "\tCAMERA ID\t\t: " << camId << endl;
   cout << "\tCAMERA RESOLUTION\t: " << width << "x" << height << endl;
 
   cout << "CAMERA INIT SUCCESSFUL.\n";
