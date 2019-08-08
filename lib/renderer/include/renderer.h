@@ -42,9 +42,9 @@ class Renderer {
 	
 	//void DrawLine(const Mat& image, Tower& tow, Unit& target, const Vec3d& tvec, const Vec3d& rvec);
 
-	void ShowText(const Mat image, const String text);
+	void ShowText(const Mat& image, const String& text);
 
-	void ShowText(const Mat& image, const std::string& text, const Point& pos);
+	void ShowText(const Mat& image, const String& text, const Point& pos);
 	
     int WaitKey(double time);
 };

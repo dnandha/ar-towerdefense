@@ -89,7 +89,7 @@ void Renderer::UpdateView(Vec3d tvec, Vec3d rvec) {
 //}
 
 //Shows a Text. Overloaded. This one shows the text in the middle of the picture
-void ShowText(const Mat image, const String text) {
+void Renderer::ShowText(const Mat& image, const String& text) {
 	Size textSize = getTextSize(text, FONT_HERSHEY_SIMPLEX, 1, 2, 0);
 	int baseLine = 2;
 	
@@ -100,9 +100,9 @@ void ShowText(const Mat image, const String text) {
 
 }
 
-//Shows a Text. Overloaded. This one shows the text at the given position(coord system starts in lower left corner).
+//Shows a Text. Overloaded. This one shows the text at the given position(coord system starts in upper left corner).
 //The point specifies the lower left corner/origin of the string
-void ShowText(const Mat image, const std::string& text, const Point& pos) {
+void Renderer::ShowText(const Mat& image, const String& text, const Point& pos) {
 	Size textSize = getTextSize(text, FONT_HERSHEY_SIMPLEX, 1, 2, 0);
 	
 	putText(image, text, pos, FONT_HERSHEY_SIMPLEX, 1, Scalar(255, 0, 0), 2);
