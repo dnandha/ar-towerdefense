@@ -1,5 +1,8 @@
 #include <opencv2/calib3d.hpp>
 #include <opencv2/ovis.hpp>
+//Für DrawLine. Funzt so aber nicht
+//#include "unit.h"
+//#include "tower.h"
 
 #include <list>
 #include <vector>
@@ -28,7 +31,21 @@ class Renderer {
     void StopEntityAnimation(const std::string& name,
                        const std::string& animname);
 
+					   
+	void updateBackground(const Mat& image);
+
+	void updateBackground(const Scalar& color);
+
+	void getScreenshot(const Mat& out);
+	
     void UpdateView(Vec3d tvec, Vec3d rvec);
+	
+	//void DrawLine(const Mat& image, Tower& tow, Unit& target, const Vec3d& tvec, const Vec3d& rvec);
+
+	void ShowText(const Mat& image, const String& text);
+
+	void ShowText(const Mat& image, const String& text, const Point& pos);
+	
     int WaitKey(double time);
 };
 

@@ -48,11 +48,64 @@ void Renderer::StopEntityAnimation(const std::string& name, const std::string& a
     m_winscene->stopEntityAnimation(name, animname);
 }
 
-//void Renderer::SetEntityPoses() {
-//}
+void Renderer::updateBackground(const Mat& image) {
+	m_winscene->setBackground(image);
+}
+
+void Renderer::updateBackground(const Scalar& color) {
+	m_winscene->setBackground(color);
+}
+
+void Renderer::getScreenshot(const Mat& output) {
+	m_winscene->getScreenshot(output);
+}
 
 void Renderer::UpdateView(Vec3d tvec, Vec3d rvec) {
     m_winscene->setCameraPose(tvec, rvec, false);
+}
+
+//Draws Line between a Tower and an ogreentity. Needs camerapose
+//void Renderer::DrawLine(const Mat& image, Tower& tow, Unit& enemy, const Vec3d& tvec, const Vec3d& rvec) {
+	//Position Tower
+	//Position posT = tow.GetPosition();
+	//Position Enemy
+	//Position posE = enemy.GetPosition();
+
+	//Point3d posTcv;
+	//Point3d posEcv;
+	//posTcv.x = posT[0];
+	//posTcv.y = posT[1];
+	//posTcv.z = posT[2];
+	//posEcv.x = posE[0];
+	//posEcv.y = posE[1];
+	//posEcv.z = posE[2];
+	//std::vector<Point3d> pointList;
+	//pointList.push_back(posTcv);
+	//pointList.push_back(posEcv);
+	//std::vector<Point2d> out2Dpts;
+	//projectPoints(pointList, rvec, tvec, camMatrix2, distCoeffs2, out2Dpts);
+
+	//line(image, out2Dpts[0], out2Dpts[1], Scalar(0, 0, 255));
+//}
+
+//Shows a Text. Overloaded. This one shows the text in the middle of the picture
+void Renderer::ShowText(const Mat& image, const String& text) {
+	Size textSize = getTextSize(text, FONT_HERSHEY_SIMPLEX, 1, 2, 0);
+	int baseLine = 2;
+	
+	double textX = (image.cols - textSize.width) / 2;
+	double textY = (image.rows + textSize.height) / 2;
+
+	putText(image, text, Point(textX, textY), FONT_HERSHEY_SIMPLEX, 1, Scalar(255, 0, 0), 2);
+
+}
+
+//Shows a Text. Overloaded. This one shows the text at the given position(coord system starts in upper left corner).
+//The point specifies the lower left corner/origin of the string
+void Renderer::ShowText(const Mat& image, const String& text, const Point& pos) {
+	Size textSize = getTextSize(text, FONT_HERSHEY_SIMPLEX, 1, 2, 0);
+	
+	putText(image, text, pos, FONT_HERSHEY_SIMPLEX, 1, Scalar(255, 0, 0), 2);
 }
 
 int Renderer::WaitKey(double waittime) {
