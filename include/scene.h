@@ -3,6 +3,8 @@
 
 #include "common.h"
 #include "entity.h"
+#include "unit.h"
+#include "tower.h"
 
 
 /**
@@ -14,7 +16,8 @@ class Scene :
 //                ,public EventHandler<UnitKilledEvent>
 {
 
-    CamPosition _cam_pos;
+    CamPosition _corner_ul;
+    CamPosition _corner_br;
 
   EventRegistration* _registration;
   Scene() {
@@ -24,6 +27,8 @@ class Scene :
   void operator=(Scene const&) = delete;
 
   std::list<Entity*> _entities;
+  std::list<Unit*> _units;
+  std::list<Tower*> _towers;
 
 protected:
   void OnEvent(MarkersDetectedEvent& e);
@@ -53,6 +58,16 @@ public:
    */
   void AddEntity(Entity* entity) {
     _entities.push_back(entity);
+  }
+
+  void AddUnit(Unit* unit) {
+    _entities.push_back(unit);
+    _units.push_back(unit);
+  }
+
+  void AddTower(Tower* tower) {
+    _entities.push_back(tower);
+    _towers.push_back(tower);
   }
 
   //void RemoveEntity(Entity& entity) {

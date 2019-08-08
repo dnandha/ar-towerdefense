@@ -18,7 +18,7 @@ class Spawner : public Entity
     bool _running;
 
 public:
-    double Interval = 2.0; // in seconds
+    double Interval = 3.0; // in seconds
 
     Spawner() : 
         Entity(200, "spawner", "Sinbad.mesh"),
@@ -49,8 +49,7 @@ void Spawner<MobSinbad>::Spawn(int count) {
     for (int i = 0; i < count; ++i ) {
         MobSinbad* mob = new MobSinbad("orcan"+std::to_string(++_counter), nullptr);
         //Position pos = {0, 0, i * 5.0};
-        Position pos = {0, 0, 0};
-        mob->SetPosition(pos);
+        mob->SetPosition(Vec3d(0,0,0));
 
         // careful: use newly constructed / pushed object and not "mob"
         Scene::GetInstance().AddEntity(mob);
@@ -60,8 +59,8 @@ void Spawner<MobSinbad>::Spawn(int count) {
 template<>
 void Spawner<DragonTower>::Spawn(int count) {
     for (int i = 0; i < count; ++i ) {
-        DragonTower* tower = new DragonTower("drogon"+std::to_string(++_counter));
-        Position pos = {10.0, 5.0, - (i+1) * 50.0};
+        DragonTower* tower = new DragonTower(i, "drogon"+std::to_string(++_counter));
+        Vec3d pos{10.0, 5.0, - (i+1) * 50.0};
         tower->SetPosition(pos);
 
         // careful: use newly constructed / pushed object and not "mob"

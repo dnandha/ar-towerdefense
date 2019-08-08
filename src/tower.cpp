@@ -31,6 +31,14 @@ void Tower::Render(Renderer* renderer) {
         renderer->AddEntity(this->GetName(), this->GetMeshName());
         on_screen = true;
     }
-    renderer->SetEntityPosition(this->GetName(), this->GetPosition());
+    renderer->SetEntityPosition(this->GetName(), this->GetPosition(), this->GetRotation());
   // render projectile
+}
+
+void Tower::OnEvent(MarkersDetectedEvent& e) {
+    Marker m = e.GetMarker();
+
+    if (m.category == _id) {
+        this->SetPosition(m.tvec, m.rvec);
+    }
 }

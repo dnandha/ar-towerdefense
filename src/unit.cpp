@@ -16,13 +16,12 @@ void Unit::Kill() {
 
 void Unit::Update(double delta) {
   if (this->IsDead()) {
-    Position pos = {5.0, 5.0, 5.0};
-    this->SetPosition(pos);
+    this->SetPosition(Vec3d(5.0, 5.0, 5.0));
   } else if (this->HasReachedEnd()) {
   } else {
     // get position from pathfinding
     // _pf->getPosition(id, delta)
-    Position pos = {0.0, 0.0, this->GetPosition()[2] + this->walkspeed * -delta};
+    Vec3d pos{0.0, 0.0, this->GetPosition()[2] + this->walkspeed * -delta};
     this->SetPosition(pos);
   }
 }
@@ -30,7 +29,7 @@ void Unit::Update(double delta) {
 void Unit::Render(Renderer* renderer) {
     if(!on_screen) {
         std::cout << "adding: " << this->GetName() << std::endl;
-        renderer->AddEntity(this->GetName(), this->GetMeshName());
+        renderer->AddEntity(this->GetName(), this->GetMeshName(), Vec3d(0.0, 0.0, 0.0));
         renderer->PlayEntityAnimation(this->GetName(), "RunBase");
         renderer->PlayEntityAnimation(this->GetName(), "RunTop");
         on_screen = true;
