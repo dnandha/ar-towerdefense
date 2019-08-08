@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "image_processor.h"
+
 /*
  *
  */
@@ -23,11 +25,10 @@ class Event {
 
 // TODO: add detection lib depenency to specifiy list of markers as args
 class MarkersDetectedEvent : public Event {
-    std::string _mockArg;
+    Marker _m;
 public:
-    MarkersDetectedEvent(std::string mockArg) : _mockArg(mockArg) {}
-
-    std::string GetMockArg() { return _mockArg; };
+    MarkersDetectedEvent(Marker m) : _m(m){}
+    Marker GetMarker() { return _m; }
 };
 
 class UnitKilledEvent : public Event {

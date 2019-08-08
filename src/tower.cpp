@@ -10,8 +10,9 @@ bool Tower::Hits(Unit* unit) {
 }
 
 void Tower::Update(double delta) {
-    if ((chrono::now() - this->_time)/1000.0 < this->cooldown) return;
-    this->_time = chrono::now();
+    this->_time += delta; 
+    if (this->_time < this->cooldown) return;
+    this->_time = 0.0;
 
     for (Unit* unit : Scene::GetInstance().GetEntities<Unit>()) {
         if (unit->IsDead()) continue;

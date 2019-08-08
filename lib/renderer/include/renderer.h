@@ -1,5 +1,6 @@
 #include <opencv2/calib3d.hpp>
 #include <opencv2/ovis.hpp>
+#include <opencv2/imgproc.hpp>
 //Für DrawLine. Funzt so aber nicht
 //#include "unit.h"
 //#include "tower.h"
@@ -39,13 +40,13 @@ class Renderer {
 	void getScreenshot(const Mat& out);
 	
     void UpdateView(Vec3d tvec, Vec3d rvec);
-	
-	//void DrawLine(const Mat& image, Tower& tow, Unit& target, const Vec3d& tvec, const Vec3d& rvec);
+
+    void UpdateBackground(Mat bgimg);
 
 	void ShowText(const Mat& image, const String& text);
 
 	void ShowText(const Mat& image, const String& text, const Point& pos);
-	
+
     int WaitKey(double time);
 };
 

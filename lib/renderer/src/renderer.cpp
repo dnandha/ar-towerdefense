@@ -61,7 +61,11 @@ void Renderer::getScreenshot(const Mat& output) {
 }
 
 void Renderer::UpdateView(Vec3d tvec, Vec3d rvec) {
-    m_winscene->setCameraPose(tvec, rvec, false);
+    m_winscene->setCameraPose(tvec, rvec, true);
+}
+
+void Renderer::UpdateBackground(Mat bgimg) {
+    m_winscene->setBackground(bgimg);
 }
 
 //Draws Line between a Tower and an ogreentity. Needs camerapose

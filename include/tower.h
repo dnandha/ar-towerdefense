@@ -6,7 +6,7 @@
 
 class Unit;
 
-/*
+/**
  * Describes tower game objects
  */
 class Tower : public Entity
@@ -21,7 +21,7 @@ public:
   float cooldown = 1; // in seconds
 
   Tower(int id, const std::string& name, const std::string& meshname) :
-    Entity(id, name, meshname), _time(chrono::now()) {}
+    Entity(id, name, meshname) {}
 
   void Build();
   void Destroy();
@@ -36,11 +36,11 @@ public:
 
 // SPECIFIC TOWERS
 /**
- *
+ * Tower which fires single projectiles
  */
 struct DragonTower : public Tower {
     DragonTower(const std::string& name) :
-        Tower(100, name, "dragon.mesh") {};
+        Tower(100, name, "tower.mesh") {};
 };
 
 #endif

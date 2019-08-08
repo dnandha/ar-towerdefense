@@ -4,8 +4,8 @@
 #include "common.h"
 #include "extern.h"
 
-/*
- * Abstract object which represents game entity
+/**
+ * Abstract class which represents game entity
  */
 class Entity
 {

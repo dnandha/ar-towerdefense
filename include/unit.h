@@ -3,7 +3,7 @@
 
 #include "entity.h"
 
-/*
+/**
  * Describes the walking path of a unit
  * todo: put in another file or makunit
  */
@@ -38,7 +38,7 @@ public:
 
 // SPECIFIC UNITS
 /**
- *
+ * Basic mob to grind
  */
 struct MobSinbad : public Unit {
     MobSinbad(const std::string& name, PathFinding* pf) :

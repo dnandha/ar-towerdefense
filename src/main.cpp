@@ -30,6 +30,7 @@ int main() {
     Player player("Mongo");
     Game game(&player);
     MarkerDetection detector;
+    Cam cam(0); // webcam
 
     // spawn mobs using spawner
     Spawner<MobSinbad> mobspawner;
@@ -45,15 +46,16 @@ int main() {
 
     double delta;
     // enter game loop
-    while (game.state != State::Ended && renderer.WaitKey(1) != 27) {
+    while (game.state != State::Ended && renderer.WaitKey(1) != 27 && cam.Grab()) {
         delta = Clock::GetInstance().Tick();
+        // get frame
+        Mat img = cam.GetFrame();
+        renderer.UpdateBackground(img); // todo: put into scene::update?
         // detect markers
-        detector.Detect();
+        detector.Detect(img);
         // update and render scene
-        for (auto* ent : Scene::GetInstance().GetEntities()) {
-            ent->Update(delta);
-            ent->Render(&renderer);
-        }
+        Scene::GetInstance().Update(delta);
+        Scene::GetInstance().Render(&renderer);
     }
 
     return 1;

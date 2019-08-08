@@ -7,7 +7,7 @@
 #include <typeindex>
 #include <unordered_map>
 
-/*
+/**
  *
  */
 template <class T>
@@ -53,7 +53,7 @@ class EventRegistration {
   bool _registered;
 };
 
-/*
+/**
  *
  */
 class EventBus {

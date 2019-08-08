@@ -5,7 +5,7 @@
 
 #include "common.h"
 
-/*
+/**
  * Track player statistics
  */
 class Player
@@ -33,7 +33,7 @@ enum State{
   Ended
 };
 
-/*
+/**
  * Main game class, puts it all together
  */
 class GameBase

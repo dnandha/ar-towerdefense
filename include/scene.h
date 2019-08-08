@@ -4,13 +4,18 @@
 #include "common.h"
 #include "entity.h"
 
-/*
+
+/**
  * Level/GameState/Scene
  * Uses Singleton pattern
  */
-class Scene : public EventHandler<MarkersDetectedEvent>
+class Scene : 
+    public EventHandler<MarkersDetectedEvent>
 //                ,public EventHandler<UnitKilledEvent>
 {
+
+    CamPosition _cam_pos;
+
   EventRegistration* _registration;
   Scene() {
       _registration = EventBus::AddHandler(*this);
@@ -39,9 +44,12 @@ public:
       _registration->RemoveHandler();
   }
 
+  // todo: somehow merge with other update/render methods
+  void Update(double delta);
+  void Render(Renderer* renderer);
+
   /**
    * Adds entity to scene (make sure entity doesn't get destroyed preliminary)
-   *
    */
   void AddEntity(Entity* entity) {
     _entities.push_back(entity);

@@ -6,9 +6,8 @@
 
 #include <iostream>
 
-class Renderer;
 // todo: move spawner into own header file
-/*
+/**
  * Unit spawner
  */
 template <class T>
@@ -62,7 +61,7 @@ template<>
 void Spawner<DragonTower>::Spawn(int count) {
     for (int i = 0; i < count; ++i ) {
         DragonTower* tower = new DragonTower("drogon"+std::to_string(++_counter));
-        Position pos = {0, 2, i * 5.0};
+        Position pos = {10.0, 5.0, - (i+1) * 50.0};
         tower->SetPosition(pos);
 
         // careful: use newly constructed / pushed object and not "mob"
