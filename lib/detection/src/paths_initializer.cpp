@@ -25,7 +25,7 @@ std::vector<std::vector<cv::Point2f>> PathsInitializer::InitializePaths() {
     if (pathFound) {
       for (auto &marker : markers) {
         if (marker.category == Start) {
-          return SetPathsInPerspective(improc);
+          return _paths;
         }
         if (marker.category == Pause) {
           pathFound = false;
@@ -74,17 +74,4 @@ bool PathsInitializer::DetectPaths(cv::Mat frame) {
     }
   }
   return false;
-}
-
-std::vector<std::vector<cv::Point2f>> PathsInitializer::SetPathsInPerspective(
-    ImageProcessor improc) {
-  std::vector<std::vector<cv::Point2f>> pathsInPerspective;
-  for (auto &path : _paths) {
-    std::vector<cv::Point2f> pointsInPerspective;
-    for (auto &point : path) {
-      pointsInPerspective.push_back(improc.SetInPerspective(point));
-    }
-    pathsInPerspective.push_back(pointsInPerspective);
-  }
-  return pathsInPerspective;
 }

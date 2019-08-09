@@ -130,6 +130,8 @@ bool ImageProcessor::ContainsBorderMarkers(vector<Marker> markers) {
   return false;
 }
 
+cv::Mat ImageProcessor::GetHomography() { return _homography; }
+
 /*
  * Removes perspective from with paper as ROI of the image
  */
@@ -157,14 +159,6 @@ cv::Mat ImageProcessor::WarpPaperImage(cv::Mat image, vector<Marker> markers,
 
   return ChangePerspective(cuttedMarker1Image, _paperBorders,
                            warpedPaperBorders);
-}
-
-cv::Point2f ImageProcessor::SetInPerspective(cv::Point2f point) {
-  cv::Mat H = _homography.inv();
-  cv::Mat pt1 = (cv::Mat_<double>(3, 1) << point.x, point.y, 1);
-  cv::Mat pt2 = H * pt1;
-  pt2 /= pt2.at<double>(2);
-  return cv::Point2f(pt2.at<double>(0, 0), pt2.at<double>(0, 1));
 }
 
 /*

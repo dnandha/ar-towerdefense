@@ -71,8 +71,8 @@ class ImageProcessor {
   bool ContainsBorderMarkers(vector<Marker> markers);
   cv::Mat WarpPaperImage(cv::Mat image, vector<Marker> markers,
                          int warpedImageWidth, int warpedImageHeight);
-  cv::Point2f SetInPerspective(cv::Point2f point);
   Marker GetMarkerOfCategory(vector<Marker> markers, MarkerCategory category);
+  cv::Mat GetHomography();
 
  private:
   cv::Mat _camMatrix, _distCoeffs;

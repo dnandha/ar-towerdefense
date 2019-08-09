@@ -22,20 +22,28 @@ class Event {
   bool _canceled;
 };
 
-
-// TODO: add detection lib depenency to specifiy list of markers as args
 class MarkersDetectedEvent : public Event {
-    Marker _m;
-public:
-    MarkersDetectedEvent(Marker m) : _m(m){}
-    Marker GetMarker() { return _m; }
+  Marker _m;
+
+ public:
+  MarkersDetectedEvent(Marker m) : _m(m) {}
+  Marker GetMarker() { return _m; }
 };
 
 class UnitKilledEvent : public Event {
-    std::string _name;
-public:
-    UnitKilledEvent(std::string name) : _name(name) {}
-    std::string GetName() { return _name; }
+  std::string _name;
+
+ public:
+  UnitKilledEvent(std::string name) : _name(name) {}
+  std::string GetName() { return _name; }
 };
+
+class HomographyComputedEvent : public Event {
+  cv::Mat _homography;
+
+ public:
+  HomographyComputedEvent(cv::Mat homography) : _homography{homography} {}
+  cv::Mat GetHomography() { return _homography; }
+}
 
 #endif
