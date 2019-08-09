@@ -9,7 +9,8 @@ void Scene::Update(double delta) {
 void Scene::Render(Renderer* renderer) {
     // update camera position
     Vec3d tvec = (_corner_ul.tvec+_corner_br.tvec)/2.0;
-    renderer->UpdateView(tvec, _corner_ul.rvec);
+    renderer->UpdateView(Vec3d(0.0, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0));
+    //renderer->UpdateView(tvec, _corner_ul.rvec);
     for (auto* ent : GetEntities()) {
         ent->Render(renderer);
     }

@@ -16,7 +16,7 @@ struct DirectedEdge {
   }
 };
 
-struct Node {
+struct GNode {
   cv::Point2f point;
   int timesVisited = 1;
   bool closed = false;
@@ -25,7 +25,7 @@ struct Node {
 };
 
 struct Graph {
-  std::vector<Node> nodes;
+  std::vector<GNode> nodes;
 };
 
 struct FringeElement {
@@ -52,7 +52,7 @@ class PathFinder {
   void ComputeHeuristics();
   bool ComputeSinglePath(int N, float C);
   float DetermineDirection(std::vector<cv::Point2f> path, DirectedEdge edge);
-  float CostFunction(Node node, float distanceTravelled, int N, float C);
+  float CostFunction(GNode node, float distanceTravelled, int N, float C);
   bool NotFinished(std::vector<FringeElement> fringe);
   std::vector<cv::Point2f> CreatePath(std::vector<FringeElement> fringe);
   void Reset();

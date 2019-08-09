@@ -25,6 +25,8 @@ std::vector<std::vector<cv::Point2f>> PathsInitializer::InitializePaths() {
     if (pathFound) {
       for (auto &marker : markers) {
         if (marker.category == Start) {
+          cv::destroyWindow("path");
+          cv::destroyWindow("cam feed");
           return _paths;
         }
         if (marker.category == Pause) {

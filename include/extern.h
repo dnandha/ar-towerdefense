@@ -21,15 +21,27 @@ class CV {
 class AbsolutePath : public EventHandler<HomographyComputedEvent> {
  public:
   AbsolutePath(std::vector<cv::Point2f> relativePath)
-      : _relativePath{relativePath} {}
+      : _relativePath{relativePath} {
+      _registration = EventBus::AddHandler(*this);
+  }
+  ~AbsolutePath() {
+      // remove event handlers
+      _registration->RemoveHandler();
+  }
 
-  cv::Point2f GetPoint(int index);
+  cv::Vec3d GetPoint(int index);
 
  protected:
   void OnEvent(HomographyComputedEvent& e);
 
  private:
+  EventRegistration* _registration;
   std::vector<cv::Point2f> _relativePath;
+  Mat _homography;
+  Mat _camMat;
+  Marker _m0;
+  Marker _m1;
+  bool _homo_computed = false;
 };
 
 struct CamPosition {

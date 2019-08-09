@@ -142,7 +142,7 @@ void PathDetector::DrawPath(cv::Mat frame, std::vector<cv::Point2f> path,
 
 void PathDetector::DrawGraph(cv::Mat frame, Graph graph) {
   for (int n = 0; n < graph.nodes.size(); n++) {
-    Node node = graph.nodes[n];
+    GNode node = graph.nodes[n];
     for (int e = 0; e < node.edges.size(); e++) {
       line(frame, node.point, graph.nodes[node.edges[e].nodeIndex].point,
            cv::Scalar(0, 0, 255));

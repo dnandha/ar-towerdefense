@@ -66,6 +66,7 @@ class ImageProcessor {
  public:
   ImageProcessor();
   vector<Marker> DetectMarkers(cv::Mat image);
+  cv::Mat GetCamMatrix() {return _camMatrix;}
   cv::Mat GetDistCoeffs();
   cv::Mat DrawMarkers(cv::Mat image, vector<Marker> markers);
   bool ContainsBorderMarkers(vector<Marker> markers);

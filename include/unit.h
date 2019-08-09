@@ -9,7 +9,7 @@
  */
 class Unit : public Entity
 {
-  PathFinding* _pf;
+  AbsolutePath* _pf;
 
   float _damagetaken;
 
@@ -17,7 +17,7 @@ public:
   float walkspeed = 2.0; // pixels per ms
   float hitpoints = 100;
 
-  Unit(int id, const std::string& name, const std::string& meshname, PathFinding* pf) :
+  Unit(int id, const std::string& name, const std::string& meshname, AbsolutePath* pf) :
     Entity(id, name, meshname), _damagetaken(.0f), _pf(pf) {}
 
   //void Walk(); // pf contains walking instructions
@@ -41,7 +41,7 @@ public:
  * Basic mob to grind
  */
 struct MobSinbad : public Unit {
-    MobSinbad(const std::string& name, PathFinding* pf) :
+    MobSinbad(const std::string& name, AbsolutePath* pf) :
         Unit(0, name, "Sinbad.mesh", pf) {};
 };
 

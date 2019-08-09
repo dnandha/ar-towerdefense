@@ -3,7 +3,7 @@
 PathFinder::PathFinder(std::vector<Polygon> polygons,
                        std::vector<Vertex> vertices) {
   for (int p = 0; p < polygons.size(); p++) {
-    Node node;
+    GNode node;
     node.point = {(float)polygons[p].centroid.x, (float)polygons[p].centroid.y};
     _graph.nodes.push_back(node);
 
@@ -85,7 +85,7 @@ void PathFinder::ComputeHeuristics() {
 bool PathFinder::ComputeSinglePath(int n, float C) {
   std::vector<FringeElement> fringe;
 
-  Node currentNode = _graph.nodes[_startNode];
+  GNode currentNode = _graph.nodes[_startNode];
   for (DirectedEdge &edge : currentNode.edges) {
     FringeElement element;
     element.distance = edge.distance;
@@ -103,7 +103,7 @@ bool PathFinder::ComputeSinglePath(int n, float C) {
     float minCost = std::numeric_limits<float>::max();
     int closedCounter = 0;
     for (int f = 0; f < fringe.size(); f++) {
-      Node potentialNext = _graph.nodes[fringe[f].edge.nodeIndex];
+      GNode potentialNext = _graph.nodes[fringe[f].edge.nodeIndex];
       if (!potentialNext.closed) {
         float cost = CostFunction(potentialNext, fringe[f].distance, n, C);
         if (cost < minCost) {
@@ -148,7 +148,7 @@ float PathFinder::DetermineDirection(std::vector<cv::Point2f> path,
   return distance;
 }
 
-float PathFinder::CostFunction(Node node, float distanceTravelled, int n,
+float PathFinder::CostFunction(GNode node, float distanceTravelled, int n,
                                float C) {
   return distanceTravelled + node.distanceToGoal + C * (node.timesVisited / n);
 }

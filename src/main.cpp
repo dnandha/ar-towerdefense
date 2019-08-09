@@ -5,6 +5,8 @@
 #include "event_bus.hpp"
 #include "spawner.hpp"
 
+#include "paths_initializer.h"
+
 #include <iostream>
 #include <ctime>
 
@@ -30,10 +32,20 @@ int main() {
     Player player("Mongo");
     Game game(&player);
     MarkerDetection detector;
-    Cam cam(0); // webcam
+    Cam cam(2); // webcam
+
+    // path detection
+    PathsInitializer initializer(cam);
+    std::vector<std::vector<cv::Point2f>> paths = initializer.InitializePaths();
+    std::vector<AbsolutePath*> abspaths;
+    for (auto& path : paths) {
+        AbsolutePath* abspath = new AbsolutePath(path);
+        abspaths.push_back(abspath);
+    }
 
     // spawn mobs using spawner
-    Spawner<MobSinbad> mobspawner;
+    Spawner<MobSinbad> mobspawner(3.0);
+    mobspawner.SetPaths(abspaths);
     Scene::GetInstance().AddEntity(&mobspawner);
 
     // spawn tower // todo: spawner wasn't intended for non-unit types

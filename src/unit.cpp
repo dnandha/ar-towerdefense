@@ -21,8 +21,13 @@ void Unit::Update(double delta) {
   } else {
     // get position from pathfinding
     // _pf->getPosition(id, delta)
-    Vec3d pos{0.0, 0.0, this->GetPosition()[2] + this->walkspeed * -delta};
-    this->SetPosition(pos);
+    //if (_pf != nullptr) {
+        Vec3d pt = _pf->GetPoint(0);
+        this->SetPosition(pt);
+    //} else {
+    //    Vec3d pos{0.0, 0.0, this->GetPosition()[2] + this->walkspeed * -delta};
+    //    this->SetPosition(pos);
+    //}
   }
 }
 
