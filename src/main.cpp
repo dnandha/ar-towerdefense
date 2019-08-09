@@ -38,7 +38,7 @@ int main() {
 
     // spawn tower // todo: spawner wasn't intended for non-unit types
     Spawner<DragonTower> towerspawner;
-    towerspawner.Spawn();
+    towerspawner.Spawn(4);
 
     // generate and start game
     game.Generate();

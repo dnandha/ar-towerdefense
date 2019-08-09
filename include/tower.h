@@ -9,11 +9,17 @@ class Unit;
 /**
  * Describes tower game objects
  */
-class Tower : public Entity
+class Tower : public Entity,
+    public EventHandler<MarkersDetectedEvent>
 {
+  EventRegistration* _registration;
+
   int _type;
   float _fov;
   double _time;
+
+protected:
+  void OnEvent(MarkersDetectedEvent& e);
 
 public:
   float damage = 10;
@@ -21,7 +27,14 @@ public:
   float cooldown = 1; // in seconds
 
   Tower(int id, const std::string& name, const std::string& meshname) :
-    Entity(id, name, meshname) {}
+    Entity(id, name, meshname) {
+      _registration = EventBus::AddHandler(*this);
+    }
+
+  ~Tower() {
+      // remove event handlers
+      _registration->RemoveHandler();
+  }
 
   void Build();
   void Destroy();
@@ -39,8 +52,8 @@ public:
  * Tower which fires single projectiles
  */
 struct DragonTower : public Tower {
-    DragonTower(const std::string& name) :
-        Tower(100, name, "tower.mesh") {};
+    DragonTower(int subid, const std::string& name) :
+        Tower(6+subid, name, "tower.mesh") {};
 };
 
 #endif
