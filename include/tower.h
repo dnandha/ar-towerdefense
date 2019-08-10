@@ -53,7 +53,7 @@ public:
  */
 struct DragonTower : public Tower {
     DragonTower(int subid, const std::string& name) :
-        Tower(6+subid, name, "tower.mesh") {};
+        Tower(6+subid, name, "Medieval_tower_low.mesh") {};
 };
 
 #endif

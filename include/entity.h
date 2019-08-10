@@ -30,7 +30,7 @@ public:
   void SetPosition(Vec3d pos, Vec3d rot) { _pos = pos; _rot = rot; }
   void SetRotation(Vec3d rot) { _rot = rot; }
   Vec3d GetPosition() { return _pos; }
-  Vec3d GetRotation() { return _pos; }
+  Vec3d GetRotation() { return _rot; }
 
   // each entity should be able to update and render itself (visitor pattern)
   virtual void Update(double delta) {};

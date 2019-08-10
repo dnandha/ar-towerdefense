@@ -26,7 +26,8 @@ void MarkerDetection::Detect(Mat img) {
         _imgproc.WarpPaperImage(img, markers, 900, 600);
         Mat homo = _imgproc.GetHomography();
         Mat camMat = _imgproc.GetCamMatrix();
-        HomographyComputedEvent event(homo, camMat, m0, m1);
+        Mat distCoeffs = _imgproc.GetDistCoeffs();
+        HomographyComputedEvent event(homo, camMat, distCoeffs, m0, m1);
         EventBus::FireEvent(event);
     }
 

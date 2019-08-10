@@ -41,14 +41,16 @@ class UnitKilledEvent : public Event {
 class HomographyComputedEvent : public Event {
   cv::Mat _homography;
   cv::Mat _camMat;
+  cv::Mat _distCoeffs;
   Marker _m0;
   Marker _m1;
 
  public:
-  HomographyComputedEvent(cv::Mat homography, cv::Mat camMat, Marker m0, Marker m1) :
-      _m0(m0), _m1(m1), _homography{homography} {}
+  HomographyComputedEvent(cv::Mat homography, cv::Mat camMat, cv::Mat distCoeffs, Marker m0, Marker m1) :
+      _camMat(camMat), _distCoeffs(distCoeffs), _m0(m0), _m1(m1), _homography{homography} {}
   cv::Mat GetHomography() { return _homography; }
   cv::Mat GetCamMatrix() { return _camMat; }
+  cv::Mat GetDistCoeffs() { return _distCoeffs; }
   Marker GetMarker0() { return _m0; }
   Marker GetMarker1() { return _m1; }
 };

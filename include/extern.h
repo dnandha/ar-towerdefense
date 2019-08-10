@@ -29,7 +29,9 @@ class AbsolutePath : public EventHandler<HomographyComputedEvent> {
       _registration->RemoveHandler();
   }
 
+  cv::Vec3d GetRotation() {return _m0.rvec;}
   cv::Vec3d GetPoint(int index);
+  int Length() {return _relativePath.size(); }
 
  protected:
   void OnEvent(HomographyComputedEvent& e);
@@ -39,6 +41,7 @@ class AbsolutePath : public EventHandler<HomographyComputedEvent> {
   std::vector<cv::Point2f> _relativePath;
   Mat _homography;
   Mat _camMat;
+  Mat _distCoeffs;
   Marker _m0;
   Marker _m1;
   bool _homo_computed = false;
