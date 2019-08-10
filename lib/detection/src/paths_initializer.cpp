@@ -61,12 +61,11 @@ bool PathsInitializer::DetectPaths(cv::Mat frame) {
     Graph graph = pf.GetGraph();
     detector.DrawGraph(frame, graph);
 
-    float C = pf.DetermineExplorationRate(frame);
-    if (pf.ComputeNPaths(10 * C, 10)) {
+    if (pf.ComputeNPaths(10)) {
       _paths.clear();
       std::vector<std::vector<cv::Point2f>> paths = pf.GetPaths();
       for (int p = 0; p < paths.size(); p++) {
-        cv::Scalar colour((p + 1) * 25, 0, 0);
+        cv::Scalar colour(0, 0, (p + 1) * 25);
         detector.DrawPath(frame, paths[p], colour);
         cv::namedWindow("path", 1);
         cv::imshow("path", frame);

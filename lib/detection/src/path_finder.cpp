@@ -45,11 +45,11 @@ PathFinder::~PathFinder() {}
 /*
  * Compute N paths on graph. Returns false on failure.
  */
-bool PathFinder::ComputeNPaths(float C, int N) {
+bool PathFinder::ComputeNPaths(int N) {
   _paths.clear();
   for (int n = 1; n <= N; n++) {
     Reset();
-    if (!ComputeSinglePath(n, C)) {
+    if (!ComputeSinglePath(n)) {
       return false;
     }
   }
@@ -58,10 +58,6 @@ bool PathFinder::ComputeNPaths(float C, int N) {
 
 Graph PathFinder::GetGraph() { return _graph; }
 std::vector<std::vector<cv::Point2f>> PathFinder::GetPaths() { return _paths; }
-
-float PathFinder::DetermineExplorationRate(cv::Mat frame) {
-  return ((frame.cols / 10) + (frame.rows / 10)) / 2;
-}
 
 void PathFinder::GetStartAndEnd() {
   for (int n = 1; n < _graph.nodes.size(); n++) {
@@ -82,7 +78,7 @@ void PathFinder::ComputeHeuristics() {
   }
 }
 
-bool PathFinder::ComputeSinglePath(int n, float C) {
+bool PathFinder::ComputeSinglePath(int n) {
   std::vector<FringeElement> fringe;
 
   GNode currentNode = _graph.nodes[_startNode];
@@ -105,7 +101,7 @@ bool PathFinder::ComputeSinglePath(int n, float C) {
     for (int f = 0; f < fringe.size(); f++) {
       GNode potentialNext = _graph.nodes[fringe[f].edge.nodeIndex];
       if (!potentialNext.closed) {
-        float cost = CostFunction(potentialNext, fringe[f].distance, n, C);
+        float cost = CostFunction(potentialNext, fringe[f].distance, n);
         if (cost < minCost) {
           minCost = cost;
           minIndex = f;
@@ -121,7 +117,10 @@ bool PathFinder::ComputeSinglePath(int n, float C) {
     for (DirectedEdge &edge :
          _graph.nodes[fringe[minIndex].edge.nodeIndex].edges) {
       FringeElement element;
-      element.distance = edge.distance + fringe[minIndex].distance;
+      element.distance =
+          edge.distance +
+          fringe[minIndex].distance *
+              (_graph.nodes[fringe[minIndex].edge.nodeIndex].timesVisited / n);
       element.edge = edge;
       for (int &index : fringe[minIndex].path) {
         element.path.push_back(index);
@@ -148,9 +147,8 @@ float PathFinder::DetermineDirection(std::vector<cv::Point2f> path,
   return distance;
 }
 
-float PathFinder::CostFunction(GNode node, float distanceTravelled, int n,
-                               float C) {
-  return distanceTravelled + node.distanceToGoal + C * (node.timesVisited / n);
+float PathFinder::CostFunction(GNode node, float distanceTravelled, int n) {
+  return (distanceTravelled + node.distanceToGoal) * (node.timesVisited / n);
 }
 
 bool PathFinder::NotFinished(std::vector<FringeElement> fringe) {
