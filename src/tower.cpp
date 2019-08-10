@@ -31,9 +31,8 @@ void Tower::Render(Renderer* renderer) {
         renderer->AddEntity(this->GetName(), this->GetMeshName());
         on_screen = true;
     }
-    renderer->SetEntityPosition(this->GetName(), this->GetPosition(), Vec3d(1.3, 0.0, 0.0));
+    renderer->SetEntityPosition(this->GetName(), this->GetPosition(), Vec3d(1.3, 0.0, 0.0));//this->GetRotation());
     //std::cout << this->GetPosition() << std::endl;
-    //, this->GetRotation());
   // render projectile
 }
 

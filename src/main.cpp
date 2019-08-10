@@ -32,7 +32,7 @@ int main() {
     Player player("Mongo");
     Game game(&player);
     MarkerDetection detector;
-    Cam cam(2); // webcam
+    Cam cam(0); // webcam
 
     // path detection
     PathsInitializer initializer(cam);

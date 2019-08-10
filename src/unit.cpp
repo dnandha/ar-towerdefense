@@ -2,12 +2,6 @@
 
 #include <iostream>
 
-
-bool Unit::HasReachedEnd()
-{
-  return false;
-}
-
 void Unit::Kill() {
   // play death animation
   // blood!!!
@@ -16,31 +10,38 @@ void Unit::Kill() {
 
 void Unit::Update(double delta) {
   if (this->IsDead()) {
-    this->SetPosition(Vec3d(5.0, 5.0, 5.0));
+      // send to valhalla // todo
+      this->SetPosition(Vec3d(500.0, 500.0, 500.0));
+  } else if (this->HasJustSpawned()) {
+      this->SetPosition(_pf->GetPoint(0), _pf->GetRotation());
+      _i_pos++;
   } else if (this->HasReachedEnd()) {
+      // send to valhalla // todo
+      this->SetPosition(Vec3d(500.0, 500.0, 500.0));
   } else {
     // get position from pathfinding
-    // _pf->getPosition(id, delta)
-    //if (_pf != nullptr) {
-        Vec3d pt = _pf->GetPoint(0);
-        this->SetPosition(pt);
-    //} else {
-    //    Vec3d pos{0.0, 0.0, this->GetPosition()[2] + this->walkspeed * -delta};
-    //    this->SetPosition(pos);
-    //}
+    for (_i_pos; _i_pos < _pf->Length(); ++_i_pos) {
+        Vec3d dir = _pf->GetPoint(_i_pos) - this->GetPosition();
+        Vec3d pos = this->GetPosition();
+        if (norm(dir) > 1.0) {
+            pos += dir * this->walkspeed * delta;
+            this->SetPosition(pos);
+            break;
+        }
+    }
   }
 }
 
 void Unit::Render(Renderer* renderer) {
     if(!on_screen) {
         std::cout << "adding: " << this->GetName() << std::endl;
-        renderer->AddEntity(this->GetName(), this->GetMeshName(), Vec3d(0.0, 0.0, 0.0));
+        renderer->AddEntity(this->GetName(), this->GetMeshName(), Vec3d(1.3, -1.3, 0.0));
         renderer->PlayEntityAnimation(this->GetName(), "RunBase");
         renderer->PlayEntityAnimation(this->GetName(), "RunTop");
         on_screen = true;
     }
 
-    renderer->SetEntityPosition(this->GetName(), this->GetPosition());
+    renderer->SetEntityPosition(this->GetName(), this->GetPosition());//, this->GetRotation());
     if (this->IsDead()) {
         renderer->StopEntityAnimation(this->GetName(), "RunBase");
         renderer->StopEntityAnimation(this->GetName(), "RunTop");

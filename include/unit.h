@@ -11,14 +11,15 @@ class Unit : public Entity
 {
   AbsolutePath* _pf;
 
-  float _damagetaken;
+  float _damagetaken = 0.0;
+  int _i_pos = 0; // counter for pathfinding position
 
 public:
   float walkspeed = 2.0; // pixels per ms
-  float hitpoints = 100;
+  float hitpoints = 10000;
 
   Unit(int id, const std::string& name, const std::string& meshname, AbsolutePath* pf) :
-    Entity(id, name, meshname), _damagetaken(.0f), _pf(pf) {}
+    Entity(id, name, meshname), _pf(pf) {}
 
   //void Walk(); // pf contains walking instructions
   //void Stop();
@@ -27,7 +28,8 @@ public:
 
   void Kill();
 
-  bool HasReachedEnd();
+  bool HasJustSpawned() {return _i_pos == 0;}
+  bool HasReachedEnd() {return _i_pos == _pf->Length();}
 
   void TakeDamage(float dmg) { _damagetaken += dmg; }
   bool IsDead() { return _damagetaken >= this->hitpoints; }
