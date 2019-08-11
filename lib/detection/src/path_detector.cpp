@@ -136,7 +136,7 @@ void PathDetector::PathCentroids(Mesh mesh, cv::Mat frame) {
 void PathDetector::DrawPath(cv::Mat frame, std::vector<cv::Point2f> path,
                             cv::Scalar colour) {
   for (int p = 1; p < path.size(); p++) {
-    line(frame, path[p - 1], path[p], colour);
+    line(frame, path[p - 1], path[p], colour, 2);
   }
 }
 
@@ -145,7 +145,7 @@ void PathDetector::DrawGraph(cv::Mat frame, Graph graph) {
     GNode node = graph.nodes[n];
     for (int e = 0; e < node.edges.size(); e++) {
       line(frame, node.point, graph.nodes[node.edges[e].nodeIndex].point,
-           cv::Scalar(0, 0, 255));
+           cv::Scalar(255, 0, 0));
     }
   }
 }
