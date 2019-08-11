@@ -59,14 +59,6 @@ void Renderer::StopEntityAnimation(const std::string& name, const std::string& a
     m_winscene->stopEntityAnimation(name, animname);
 }
 
-void Renderer::updateBackground(const Mat& image) {
-	m_winscene->setBackground(image);
-}
-
-void Renderer::updateBackground(const Scalar& color) {
-	m_winscene->setBackground(color);
-}
-
 void Renderer::getScreenshot(const Mat& output) {
 	m_winscene->getScreenshot(output);
 }
@@ -75,8 +67,9 @@ void Renderer::UpdateView(Vec3d tvec, Vec3d rvec) {
     m_winscene->setCameraPose(tvec, rvec, true);
 }
 
-void Renderer::UpdateBackground(Mat bgimg) {
-    m_winscene->setBackground(bgimg);
+void Renderer::UpdateBackground(Mat bgimage) {
+    m_bgimage = bgimage;
+    m_winscene->setBackground(m_bgimage);
 }
 
 //Draws Line between a Tower and an ogreentity. Needs camerapose
@@ -103,24 +96,11 @@ void Renderer::UpdateBackground(Mat bgimg) {
 	//line(image, out2Dpts[0], out2Dpts[1], Scalar(0, 0, 255));
 //}
 
-//Shows a Text. Overloaded. This one shows the text in the middle of the picture
-void Renderer::ShowText(const Mat& image, const String& text) {
-	Size textSize = getTextSize(text, FONT_HERSHEY_SIMPLEX, 1, 2, 0);
-	int baseLine = 2;
-	
-	double textX = (image.cols - textSize.width) / 2;
-	double textY = (image.rows + textSize.height) / 2;
-
-	putText(image, text, Point(textX, textY), FONT_HERSHEY_SIMPLEX, 1, Scalar(255, 0, 0), 2);
-
-}
-
-//Shows a Text. Overloaded. This one shows the text at the given position(coord system starts in upper left corner).
-//The point specifies the lower left corner/origin of the string
-void Renderer::ShowText(const Mat& image, const String& text, const Point& pos) {
+void Renderer::ShowText(const String& text, const Point& pos) {
 	Size textSize = getTextSize(text, FONT_HERSHEY_SIMPLEX, 1, 2, 0);
 	
-	putText(image, text, pos, FONT_HERSHEY_SIMPLEX, 1, Scalar(255, 0, 0), 2);
+	putText(m_bgimage, text, pos, FONT_HERSHEY_SIMPLEX, 1, Scalar(255, 0, 0), 2);
+    m_winscene->setBackground(m_bgimage);
 }
 
 int Renderer::WaitKey(double waittime) {

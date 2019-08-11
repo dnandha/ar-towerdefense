@@ -9,7 +9,7 @@ void Scene::Update(double delta) {
 void Scene::Render(Renderer* renderer) {
     // update camera position
     Vec3d tvec = (_corner_ul.tvec+_corner_br.tvec)/2.0;
-    renderer->UpdateView(Vec3d(0.0, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0));
+    //renderer->UpdateView(Vec3d(0.0, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0));
     //renderer->UpdateView(tvec, _corner_ul.rvec);
     for (auto* ent : GetEntities()) {
         ent->Render(renderer);
@@ -21,20 +21,12 @@ void Scene::Render(Renderer* renderer) {
 
 void Scene::OnEvent(MarkersDetectedEvent& e) {
     Marker m = e.GetMarker();
-    std::cout << m.category << std::endl;
-
     switch (m.category) {
         case 0:
             _corner_ul = CamPosition{m.tvec, m.rvec};
             break;
         case 1:
             _corner_br = CamPosition{m.tvec, m.rvec};
-            break;
-        case MarkerCategory::Action:
-            //Scene::GetInstance()->BuildTower();
-            break;
-        case 3:
-            //Scene::GetInstance()->PlaceTower(0);
             break;
     }
 }

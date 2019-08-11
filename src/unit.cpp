@@ -1,6 +1,5 @@
 #include "unit.h"
-
-#include <iostream>
+#include "events.h"
 
 void Unit::Kill() {
   // play death animation
@@ -12,12 +11,20 @@ void Unit::Update(double delta) {
   if (this->IsDead()) {
       // send to valhalla // todo
       this->SetPosition(Vec3d(500.0, 500.0, 500.0));
+
+      // give player points
+      GameEvent e(GameEventType::PlayerScore);
+      EventBus::FireEvent(e);
   } else if (this->HasJustSpawned()) {
       this->SetPosition(_pf->GetPoint(0), _pf->GetRotation());
       _i_pos++;
   } else if (this->HasReachedEnd()) {
       // send to valhalla // todo
       this->SetPosition(Vec3d(500.0, 500.0, 500.0));
+
+      // hurt player
+      GameEvent e(GameEventType::PlayerHit);
+      EventBus::FireEvent(e);
   } else {
     // get position from pathfinding
     for (_i_pos; _i_pos < _pf->Length(); ++_i_pos) {
@@ -41,7 +48,7 @@ void Unit::Render(Renderer* renderer) {
         on_screen = true;
     }
 
-    renderer->SetEntityPosition(this->GetName(), this->GetPosition());//, this->GetRotation());
+    renderer->SetEntityPosition(this->GetName(), this->GetPosition(), this->GetRotation());
     if (this->IsDead()) {
         renderer->StopEntityAnimation(this->GetName(), "RunBase");
         renderer->StopEntityAnimation(this->GetName(), "RunTop");

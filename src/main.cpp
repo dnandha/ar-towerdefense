@@ -5,6 +5,8 @@
 #include "event_bus.hpp"
 #include "spawner.hpp"
 
+#include "ui.h"
+
 #include "paths_initializer.h"
 
 #include <iostream>
@@ -31,10 +33,13 @@ int main() {
     // create game objects
     Player player("Mongo");
     Game game(&player);
-    MarkerDetection detector;
-    Cam cam(0); // webcam
+    UI ui(&game);
 
-    // path detection
+    // detection and cam
+    MarkerDetection detector;
+    Cam cam(0);
+
+    // path finding
     PathsInitializer initializer(cam);
     std::vector<std::vector<cv::Point2f>> paths = initializer.InitializePaths();
     std::vector<AbsolutePath*> abspaths;
@@ -50,15 +55,14 @@ int main() {
 
     // spawn tower // todo: spawner wasn't intended for non-unit types
     Spawner<DragonTower> towerspawner;
-    towerspawner.Spawn(4);
-
-    // generate and start game
-    game.Generate();
-    game.Start();
+    towerspawner.Spawn(4); // spawn 4 dummy towers in valhalla
 
     double delta;
     // enter game loop
     while (game.state != State::Ended && renderer.WaitKey(1) != 27 && cam.Grab()) {
+        if (game.state == State::Paused)
+            continue;
+
         delta = Clock::GetInstance().Tick();
         // get frame
         Mat img = cam.GetFrame();
@@ -68,6 +72,8 @@ int main() {
         // update and render scene
         Scene::GetInstance().Update(delta);
         Scene::GetInstance().Render(&renderer);
+        // draw ui
+        ui.Render(&renderer);
     }
 
     return 1;

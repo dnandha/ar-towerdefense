@@ -27,8 +27,6 @@ class Scene :
   void operator=(Scene const&) = delete;
 
   std::list<Entity*> _entities;
-  std::list<Unit*> _units;
-  std::list<Tower*> _towers;
 
 protected:
   void OnEvent(MarkersDetectedEvent& e);
@@ -60,16 +58,7 @@ public:
     _entities.push_back(entity);
   }
 
-  void AddUnit(Unit* unit) {
-    _entities.push_back(unit);
-    _units.push_back(unit);
-  }
-
-  void AddTower(Tower* tower) {
-    _entities.push_back(tower);
-    _towers.push_back(tower);
-  }
-
+  // todo
   //void RemoveEntity(Entity& entity) {
   //  _entities.remove(entity);
   //}

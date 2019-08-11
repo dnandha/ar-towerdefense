@@ -2,27 +2,43 @@
 #define _GAME_H
 
 #include <list>
+#include <string>
 
 #include "common.h"
+#include "event_bus.hpp"
 
 /**
  * Track player statistics
  */
 class Player
 {
-  int _health;
   int _lives;
   int _score;
   const char *_name;
 
 protected:
-  bool IsDead();
+  bool IsDead() {return _lives == 0;}
 
 public:
-  Player(const char *name) : _name(name), _health(100), _lives(3) {}
-  Player(int health, int lives) : _health(health), _lives(lives) {}
+  Player(const char *name, int lives = 10) : _name(name), _score(0), _lives(lives) {}
 
-  void TakeHit();
+  std::string GetLivesString() { 
+    std::ostringstream ss;
+    ss << "Remaining lives: " << _lives;
+    return ss.str();
+  }
+  std::string GetScoreString() { 
+    std::ostringstream ss;
+    ss << "Current score: " << _score;
+    return ss.str();
+  }
+  std::string GetNameString() {
+    std::ostringstream ss;
+    ss << "Player: " << _name;
+    return ss.str();
+  }
+
+  void TakeHit() { _lives > 0 ? _lives-- : _lives = 0; }
   void ScorePlus() { _score++; }
 };
 
@@ -38,12 +54,28 @@ enum State{
  */
 class GameBase
 {
+protected:
   Player* _player;
 
-  public:
+public:
     State state;
 
     GameBase(Player* player) : _player(player), state(State::Init) {}
+
+    Player* GetPlayer() { return _player; }
+
+    std::string GetStateString() {
+        std::string statestr = "";
+        switch (state) {
+            case State::Init: statestr = "Init"; break;
+            case State::Paused: statestr = "Paused"; break;
+            case State::Running: statestr = "Running"; break;
+            case State::Ended: statestr = "Ended"; break;
+        }
+        std::ostringstream ss;
+        ss << "Game state: " << statestr;
+        return ss.str();
+    }
 
     virtual void Start() {
       state = State::Running;
@@ -58,13 +90,33 @@ class GameBase
     {
       state = State::Ended;
     }
-
-    virtual void GenerateLevels() {}
 };
 
-struct Game : GameBase {
-    Game(Player* player) : GameBase(player) {};
-    void Generate();
+class Game : public GameBase,
+    public EventHandler<MarkersDetectedEvent>,
+    public EventHandler<GameEvent>
+{
+
+    EventRegistration* _evreg_marker;
+    EventRegistration* _evreg_game;
+
+protected:
+    void OnEvent(MarkersDetectedEvent& e);
+    void OnEvent(GameEvent& e);
+
+public:
+    Game(Player* player) : GameBase(player) {
+      _evreg_marker = EventBus::AddHandler<MarkersDetectedEvent>(*this);
+      _evreg_game = EventBus::AddHandler<GameEvent>(*this);
+    };
+    ~Game() {
+      // remove event handlers
+      _evreg_marker->RemoveHandler();
+      _evreg_game->RemoveHandler();
+    }
+
+    Player* GetPlayer() { return _player; }
+
     void Start();
     void Pause();
     void Resume();

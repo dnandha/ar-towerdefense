@@ -6,7 +6,7 @@
 
 
 bool Tower::Hits(Unit* unit) {
-    return true;
+    return true; // todo: range check
 }
 
 void Tower::Update(double delta) {
@@ -40,6 +40,8 @@ void Tower::OnEvent(MarkersDetectedEvent& e) {
     Marker m = e.GetMarker();
 
     if (m.category == _id) {
-        this->SetPosition(m.tvec, m.rvec);
+        if (this->IsPlacementAllowed()) {
+            this->SetPosition(m.tvec, m.rvec);
+        }
     }
 }

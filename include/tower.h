@@ -17,6 +17,7 @@ class Tower : public Entity,
   int _type;
   float _fov;
   double _time;
+  bool _allow_placement;
 
 protected:
   void OnEvent(MarkersDetectedEvent& e);
@@ -35,6 +36,9 @@ public:
       // remove event handlers
       _registration->RemoveHandler();
   }
+
+  void AllowPlacement(bool allow) { _allow_placement = allow; }
+  bool IsPlacementAllowed() { return _allow_placement; }
 
   void Build();
   void Destroy();

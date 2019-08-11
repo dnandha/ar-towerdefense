@@ -22,6 +22,18 @@ class Event {
   bool _canceled;
 };
 
+enum GameEventType {
+    PlayerHit,
+    PlayerScore
+};
+
+class GameEvent : public Event {
+  GameEventType _t;    
+ public:
+  GameEvent(GameEventType t) : _t(t) {}
+  GameEventType GetType() { return _t; }
+};
+
 class MarkersDetectedEvent : public Event {
   Marker _m;
 

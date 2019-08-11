@@ -14,6 +14,7 @@ class Renderer {
   Mat m_K;
   Ptr<ovis::WindowScene> m_winscene;
   Vec3d m_vrot;
+  Mat m_bgimage;
 
   public:
     Renderer(std::vector<int> size, std::list<std::string> resources);
@@ -35,11 +36,6 @@ class Renderer {
     void StopEntityAnimation(const std::string& name,
                        const std::string& animname);
 
-					   
-	void updateBackground(const Mat& image);
-
-	void updateBackground(const Scalar& color);
-
 	void getScreenshot(const Mat& out);
 	
     void UpdateView(Vec3d tvec, Vec3d rvec);
@@ -48,7 +44,11 @@ class Renderer {
 
 	void ShowText(const Mat& image, const String& text);
 
-	void ShowText(const Mat& image, const String& text, const Point& pos);
+    /**
+     * Shows a Text. Overloaded. This one shows the text at the given position(coord system starts in upper left corner).
+     * The point specifies the lower left corner/origin of the string
+     **/
+	void ShowText(const String& text, const Point& pos);
 
     int WaitKey(double time);
 };
