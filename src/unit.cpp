@@ -1,4 +1,5 @@
 /**
+<<<<<<< HEAD
  * ARTD (Augmented Reality Tower Defense)
  * Copyright (C) 2019 Jaeger,Stegmueller,Boche,Nandha
  *
@@ -15,6 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+=======
+* ARTD (Augmented Reality Tower Defense)
+* Copyright (C) 2019 Jaeger,Stegmueller,Boche,Nandha 
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+>>>>>>> 639e6d59838d8ef06b70ef0083c37f7d091f9dcb
 
 #include "unit.h"
 #include "events.h"
@@ -29,7 +48,10 @@ void Unit::Update(double delta) {
   if (this->IsDead()) {
     // send to valhalla // todo
     this->SetPosition(Vec3d(500.0, 500.0, 500.0));
+<<<<<<< HEAD
     this->SetLookAt(_pf->GetPoint(_i_pos));
+=======
+>>>>>>> 639e6d59838d8ef06b70ef0083c37f7d091f9dcb
 
     if (!_mark_removed) {  // todo
       _mark_removed = true;
@@ -69,13 +91,19 @@ void Unit::Render(Renderer* renderer) {
                         Vec3d(-1.3, 0.0, 0.0));
     renderer->PlayEntityAnimation(this->GetName(), "RunBase");
     renderer->PlayEntityAnimation(this->GetName(), "RunTop");
+<<<<<<< HEAD
     renderer->SetEntityScale(this->GetName(), this->GetScale());
+=======
+>>>>>>> 639e6d59838d8ef06b70ef0083c37f7d091f9dcb
     on_screen = true;
   }
 
   renderer->SetEntityPosition(this->GetName(), this->GetPosition(),
                               this->GetRotation());
+<<<<<<< HEAD
   renderer->SetEntityLookAt(this->GetName(), this->GetLookAt());
+=======
+>>>>>>> 639e6d59838d8ef06b70ef0083c37f7d091f9dcb
   if (this->IsDead()) {
     renderer->StopEntityAnimation(this->GetName(), "RunBase");
     renderer->StopEntityAnimation(this->GetName(), "RunTop");

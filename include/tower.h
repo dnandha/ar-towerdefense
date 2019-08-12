@@ -33,10 +33,16 @@ class Tower : public Entity, public EventHandler<MarkersDetectedEvent> {
   float _fov;
   double _time;
   bool _allow_placement;
+<<<<<<< HEAD
   Marker _lastDetectedTowerMarker;
   Vec3d _relativeTranslation;
   bool _freeze = false;
   bool _gotDetected = false;
+=======
+  bool _freeze = false;
+  Marker _lastDetectedTowerMarker;
+  cv::Vec3d _relativeTranslation;
+>>>>>>> 639e6d59838d8ef06b70ef0083c37f7d091f9dcb
 
  protected:
   void OnEvent(MarkersDetectedEvent& e);
@@ -46,7 +52,11 @@ class Tower : public Entity, public EventHandler<MarkersDetectedEvent> {
 
  public:
   float damage = 10;  // todo: make virtual and override in each sub class
+<<<<<<< HEAD
   float range = 20;
+=======
+  float range = 10;
+>>>>>>> 639e6d59838d8ef06b70ef0083c37f7d091f9dcb
   float cooldown = 1;  // in seconds
 
   Tower(int id, const std::string& name, const std::string& meshname)

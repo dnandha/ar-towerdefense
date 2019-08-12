@@ -1,4 +1,5 @@
 /**
+<<<<<<< HEAD
  * ARTD (Augmented Reality Tower Defense)
  * Copyright (C) 2019 Jaeger,Stegmueller,Boche,Nandha
  *
@@ -15,6 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+=======
+* ARTD (Augmented Reality Tower Defense)
+* Copyright (C) 2019 Jaeger,Stegmueller,Boche,Nandha 
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+>>>>>>> 639e6d59838d8ef06b70ef0083c37f7d091f9dcb
 
 #include <spawner.hpp>
 
@@ -25,8 +44,12 @@ void Spawner<MobSinbad>::Spawn(int count) {
                                    _paths[_counter % _paths.size()]);
     _counter++;
 
+<<<<<<< HEAD
     mob->SetScale(0.3);
     mob->SetPosition(Vec3d(-500, -500, -500));
+=======
+        mob->SetPosition(Vec3d(500,500,500));
+>>>>>>> 639e6d59838d8ef06b70ef0083c37f7d091f9dcb
 
     // careful: use newly constructed / pushed object and not "mob"
     Scene::GetInstance().AddEntity(mob);
