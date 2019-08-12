@@ -95,9 +95,10 @@ int main() {
       double org_x_axis = 900;
       double org_y_axis = 600;
       for (auto &point : paths[0]) {
-        // scale path points and reverse x axis
-        cv::Point3f scaledPoint((org_x_axis - point.x) * (x_max / org_x_axis),
-                                point.y * (y_max / org_y_axis), 0);
+        // scale path points and reverse y axis
+        cv::Point3f scaledPoint(point.x * (x_max / org_x_axis),
+                                (org_y_axis - point.y) * (y_max / org_y_axis),
+                                0);
         cv::Mat scaledPointMat(scaledPoint);
         cv::Mat scaledPoint_f64;
         scaledPointMat.convertTo(scaledPoint_f64, CV_64F);
