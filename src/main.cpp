@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
     Renderer renderer(winsize, {"packs/Sinbad.zip", "packs/tower.zip"});
 
     // create game objects
-    Player player("Mongo");
+    Player player("Sauron");
     Game game(&player);
     UI ui(&game);
 
