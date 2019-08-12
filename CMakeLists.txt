@@ -10,15 +10,12 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 find_package(OpenCV REQUIRED)
 include_directories(${OPENCV_INCLUDE_DIR})
 
-include_directories(include/)
+include_directories(include/)       
 include_directories(lib/detection/include)
 include_directories(lib/renderer/include)
 
 add_subdirectory(lib/detection)
-add_subdirectory(lib/renderer)
-
-#link_directories(lib/detection/)
-#link_directories(lib/renderer/)
+add_subdirectory(lib/renderer) 
 
 add_subdirectory(src)
 add_subdirectory(test)
