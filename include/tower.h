@@ -27,7 +27,7 @@ protected:
 
 public:
   float damage = 10; // todo: make virtual and override in each sub class
-  float range = 10;
+  float range = 20;
   float cooldown = 1; // in seconds
 
   Tower(int id, const std::string& name, const std::string& meshname) :

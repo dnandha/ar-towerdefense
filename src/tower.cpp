@@ -11,7 +11,7 @@ float Tower::DistanceTo(Unit* unit) {
 
 bool Tower::Hits(Unit* unit) {
     std::cout << this->DistanceTo(unit) << std::endl;
-    if (this->range < this->DistanceTo(unit))
+    if (this->range > this->DistanceTo(unit))
         return true;
 
     return false;
@@ -38,6 +38,13 @@ void Tower::Render(Renderer* renderer) {
         renderer->AddEntity(this->GetName(), this->GetMeshName());
         on_screen = true;
     }
+    for (Unit* unit : Scene::GetInstance().GetEntities<Unit>()) {
+        if (this->Hits(unit)) {
+            renderer->DrawLine(this->GetPosition(), unit->GetPosition());
+            break; // only damage first unit in sight
+        }
+    }
+
     renderer->SetEntityPosition(this->GetName(), this->GetPosition(), Vec3d(1.3, 0.0, 0.0));//this->GetRotation());
     //std::cout << this->GetPosition() << std::endl;
   // render projectile
