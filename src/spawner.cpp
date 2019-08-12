@@ -24,7 +24,8 @@ void Spawner<MobSinbad>::Spawn(int count) {
         MobSinbad* mob = new MobSinbad("orc"+std::to_string(++_counter), _paths[_counter % _paths.size()]);
         _counter++;
 
-        mob->SetPosition(Vec3d(500,500,500));
+        mob->SetScale(0.3);
+        mob->SetPosition(Vec3d(-500,-500,-500));
 
         // careful: use newly constructed / pushed object and not "mob"
         Scene::GetInstance().AddEntity(mob);
