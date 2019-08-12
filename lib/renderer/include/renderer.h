@@ -47,17 +47,15 @@ class Renderer {
     /** 
      * Draw image in scene background
      */
-    void UpdateBackground(Mat bgimg);
+    void UpdateBackground(Mat bgimg, bool show = true);
 	
 	void DrawLine(const Mat& image, const std::string& towName, const std::string& unitName, const Vec3d& tvec, const Vec3d& rvec);
-
-	void ShowText(const Mat& image, const String& text);
 
     /**
      * Shows a Text. Overloaded. This one shows the text at the given position(coord system starts in upper left corner).
      * The point specifies the lower left corner/origin of the string
      */
-	void ShowText(const String& text, const Point& pos);
+	void ShowText(const String& text, const Point& pos, bool centered = false);
 
     int WaitKey(double time);
 };

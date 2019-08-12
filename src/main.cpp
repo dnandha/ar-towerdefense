@@ -15,7 +15,11 @@
 /**
  * Main Loop
  */
-int main() {
+int main(int argc, char** argv) {
+    int webcamId = 0;
+    if (argc > 1)
+        webcamId = atoi(argv[1]);
+
     // create rendering window
     WinSize winsize = {800, 600};
     Renderer renderer(winsize, {"packs/Sinbad.zip", "packs/tower.zip"});
@@ -27,7 +31,7 @@ int main() {
 
     // detection and cam
     MarkerDetection detector;
-    Cam cam(0);
+    Cam cam(webcamId);
 
     // path finding
     PathsInitializer initializer(cam);
@@ -57,7 +61,7 @@ int main() {
 
         // get frame
         Mat img = cam.GetFrame();
-        renderer.UpdateBackground(img); // todo: put into scene::update?
+        renderer.UpdateBackground(img, false); // todo: put into scene::update?
 
         if (game.state != GameBase::State::Paused) {
             // detect markers
