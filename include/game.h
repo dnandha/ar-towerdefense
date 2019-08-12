@@ -8,16 +8,13 @@
 #include "event_bus.hpp"
 
 /**
- * Track player statistics
+ * Player information and stats
  */
 class Player
 {
   int _lives;
   int _score;
   const char *_name;
-
-protected:
-  bool IsDead() {return _lives == 0;}
 
 public:
   Player(const char *name, int lives = 10) : _name(name), _score(0), _lives(lives) {}
@@ -38,15 +35,10 @@ public:
     return ss.str();
   }
 
+  bool IsDead() {return _lives == 0;}
+
   void TakeHit() { _lives > 0 ? _lives-- : _lives = 0; }
   void ScorePlus() { _score++; }
-};
-
-enum State{
-  Init,
-  Running,
-  Paused,
-  Ended
 };
 
 /**
@@ -58,19 +50,26 @@ protected:
   Player* _player;
 
 public:
-    State state;
+    enum State{
+      Init,
+      Running,
+      Paused,
+      Ended
+    };
 
-    GameBase(Player* player) : _player(player), state(State::Init) {}
+    GameBase::State state;
+
+    GameBase(Player* player) : _player(player), state(GameBase::State::Init) {}
 
     Player* GetPlayer() { return _player; }
 
     std::string GetStateString() {
         std::string statestr = "";
         switch (state) {
-            case State::Init: statestr = "Init"; break;
-            case State::Paused: statestr = "Paused"; break;
-            case State::Running: statestr = "Running"; break;
-            case State::Ended: statestr = "Ended"; break;
+            case GameBase::State::Init: statestr = "Init"; break;
+            case GameBase::State::Paused: statestr = "Paused"; break;
+            case GameBase::State::Running: statestr = "Running"; break;
+            case GameBase::State::Ended: statestr = "Ended"; break;
         }
         std::ostringstream ss;
         ss << "Game state: " << statestr;
@@ -78,20 +77,23 @@ public:
     }
 
     virtual void Start() {
-      state = State::Running;
+      state = GameBase::State::Running;
     }
     virtual void Pause() {
-      state = State::Paused;
+      state = GameBase::State::Paused;
     }
     virtual void Resume() {
-      state = State::Running;
+      state = GameBase::State::Running;
     }
     virtual void End()
     {
-      state = State::Ended;
+      state = GameBase::State::Ended;
     }
 };
 
+/**
+ * Game implementation, event aware
+ */
 class Game : public GameBase,
     public EventHandler<MarkersDetectedEvent>,
     public EventHandler<GameEvent>

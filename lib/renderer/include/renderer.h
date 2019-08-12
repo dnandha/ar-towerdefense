@@ -1,15 +1,16 @@
 #include <opencv2/calib3d.hpp>
 #include <opencv2/ovis.hpp>
 #include <opencv2/imgproc.hpp>
-//Für DrawLine. Funzt so aber nicht
-//#include "unit.h"
-//#include "tower.h"
+
 
 #include <list>
 #include <vector>
 
 using namespace cv;
 
+/**
+ * Component for rendering scene using Ovis (OpenCV module)
+ */
 class Renderer {
   Mat m_K;
   Ptr<ovis::WindowScene> m_winscene;
@@ -38,17 +39,23 @@ class Renderer {
 
 	void getScreenshot(const Mat& out);
 	
+    /**
+     * Update camera positioning
+     */
     void UpdateView(Vec3d tvec, Vec3d rvec);
 
-    void UpdateBackground(Mat bgimg);
-
-	void ShowText(const Mat& image, const String& text);
+    /** 
+     * Draw image in scene background
+     */
+    void UpdateBackground(Mat bgimg, bool show = true);
+	
+	void DrawLine(const Mat& image, const std::string& towName, const std::string& unitName, const Vec3d& tvec, const Vec3d& rvec);
 
     /**
      * Shows a Text. Overloaded. This one shows the text at the given position(coord system starts in upper left corner).
      * The point specifies the lower left corner/origin of the string
-     **/
-	void ShowText(const String& text, const Point& pos);
+     */
+	void ShowText(const String& text, const Point& pos, bool centered = false);
 
     int WaitKey(double time);
 };

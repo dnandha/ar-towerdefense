@@ -5,8 +5,16 @@
 #include <iostream>
 
 
+float Tower::DistanceTo(Unit* unit) {
+    return norm(this->GetPosition() - unit->GetPosition());
+}
+
 bool Tower::Hits(Unit* unit) {
-    return true; // todo: range check
+    std::cout << this->DistanceTo(unit) << std::endl;
+    if (this->range < this->DistanceTo(unit))
+        return true;
+
+    return false;
 }
 
 void Tower::Update(double delta) {
@@ -18,8 +26,7 @@ void Tower::Update(double delta) {
         if (unit->IsDead()) continue;
         if (this->Hits(unit)) {
             std::cout << "hitting: " << unit->GetName() << std::endl;
-            float dmg = this->GetDamage(delta);
-            unit->TakeDamage(dmg);
+            unit->TakeDamage(this->damage);
             break; // only damage first unit in sight
         }
     }

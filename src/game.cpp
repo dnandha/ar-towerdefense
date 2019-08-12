@@ -52,10 +52,10 @@ void Game::OnEvent(MarkersDetectedEvent& e) {
 
 void Game::OnEvent(GameEvent& e) {
     switch(e.GetType()) {
-        case PlayerHit:
+        case GameEvent::EventType::PlayerHit:
             this->GetPlayer()->TakeHit();
             break;
-        case PlayerScore:
+        case GameEvent::EventType::PlayerScore:
             this->GetPlayer()->ScorePlus();
             break;
     }

@@ -8,14 +8,14 @@
 #include "cam.h"
 #include "image_processor.h"
 
-/*
- * Computer vision component
- */
-class CV {
-  // todo
+
+struct CamPosition {
+    Vec3d tvec;
+    Vec3d rvec;
 };
 
-/*
+/**
+ * Implements path finding from detection library
  * Holds the relative path but delivers the absolute points
  */
 class AbsolutePath : public EventHandler<HomographyComputedEvent> {
@@ -47,13 +47,8 @@ class AbsolutePath : public EventHandler<HomographyComputedEvent> {
   bool _homo_computed = false;
 };
 
-struct CamPosition {
-  Vec3d tvec;
-  Vec3d rvec;
-};
-
-/*
- *
+/**
+ * Implements marker / image processing from detection library
  */
 class MarkerDetection {
   ImageProcessor _imgproc;

@@ -7,7 +7,7 @@
 class Unit;
 
 /**
- * Describes tower game objects
+ * Describes general tower game object
  */
 class Tower : public Entity,
     public EventHandler<MarkersDetectedEvent>
@@ -22,9 +22,12 @@ class Tower : public Entity,
 protected:
   void OnEvent(MarkersDetectedEvent& e);
 
+  float DistanceTo(Unit* unit);
+  bool Hits(Unit* unit);
+
 public:
-  float damage = 10;
-  float range = 100; // in pixels
+  float damage = 10; // todo: make virtual and override in each sub class
+  float range = 10;
   float cooldown = 1; // in seconds
 
   Tower(int id, const std::string& name, const std::string& meshname) :
@@ -42,10 +45,6 @@ public:
 
   void Build();
   void Destroy();
-
-  bool Hits(Unit* unit);
-
-  float GetDamage(double delta) { return this->damage; }
 
   void Update(double delta);
   void Render(Renderer* renderer);

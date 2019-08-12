@@ -6,11 +6,11 @@
 #include "extern.h"
 
 /**
- * Class which represents UI for stats
- **/
+ * Class represents UI for stats
+ */
 class UI
 {
-    Game* _game; // game has all the stats
+    Game* _game; // game contains all the stats
 public:
     UI(Game *game) : _game(game) {}
 

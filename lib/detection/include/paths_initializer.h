@@ -4,6 +4,9 @@
 #include "mesh.h"
 #include "path_detector.h"
 
+/**
+ * Recognition of path / line
+ */
 class PathsInitializer {
  public:
   PathsInitializer(Cam cam) : _cam{cam} {}

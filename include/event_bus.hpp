@@ -7,8 +7,10 @@
 #include <typeindex>
 #include <unordered_map>
 
+// Source: https://github.com/dquist/EventBus/
+
 /**
- *
+ * EventHandler to be implemented by each listener
  */
 template <class T>
 class EventHandler {
@@ -23,6 +25,9 @@ class EventHandler {
   void HandleEvent(Event &e) { OnEvent(dynamic_cast<T &>(e)); };
 };
 
+/**
+ * Registration keeps track of all event handlers of specific type
+ */
 class EventRegistration {
  public:
   typedef std::list<EventRegistration *> Registrations;
@@ -54,7 +59,7 @@ class EventRegistration {
 };
 
 /**
- *
+ * Singleton bus for event transmission
  */
 class EventBus {
  private:

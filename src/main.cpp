@@ -12,20 +12,14 @@
 #include <iostream>
 #include <ctime>
 
-/*
- * Init Game
+/**
+ * Main Loop
  */
-void initialize() {
-  // init cv
-  // init pathfinding
-  // generate path
-  // load meshes
-}
+int main(int argc, char** argv) {
+    int webcamId = 0;
+    if (argc > 1)
+        webcamId = atoi(argv[1]);
 
-/*
- * Main
- */
-int main() {
     // create rendering window
     WinSize winsize = {800, 600};
     Renderer renderer(winsize, {"packs/Sinbad.zip", "packs/tower.zip"});
@@ -37,7 +31,7 @@ int main() {
 
     // detection and cam
     MarkerDetection detector;
-    Cam cam(0);
+    Cam cam(webcamId);
 
     // path finding
     PathsInitializer initializer(cam);
@@ -59,21 +53,25 @@ int main() {
 
     double delta;
     // enter game loop
-    while (game.state != State::Ended && renderer.WaitKey(1) != 27 && cam.Grab()) {
-        if (game.state == State::Paused)
-            continue;
+    while (game.state != GameBase::State::Ended
+            && renderer.WaitKey(1) != 27
+            && cam.Grab()) {
 
         delta = Clock::GetInstance().Tick();
+
         // get frame
         Mat img = cam.GetFrame();
-        renderer.UpdateBackground(img); // todo: put into scene::update?
-        // detect markers
-        detector.Detect(img);
-        // update and render scene
-        Scene::GetInstance().Update(delta);
-        Scene::GetInstance().Render(&renderer);
-        // draw ui
-        ui.Render(&renderer);
+        renderer.UpdateBackground(img, false); // todo: put into scene::update?
+
+        if (game.state != GameBase::State::Paused) {
+            // detect markers
+            detector.Detect(img);
+            // update and render scene
+            Scene::GetInstance().Update(delta);
+            Scene::GetInstance().Render(&renderer);
+            // draw ui
+            ui.Render(&renderer);
+        }
     }
 
     return 1;

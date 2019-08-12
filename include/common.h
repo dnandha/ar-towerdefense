@@ -7,16 +7,23 @@
 //typedef std::vector<double> Position;
 typedef std::vector<int> WinSize;
 
+/**
+ * Time namespace
+ */
 namespace chrono {
-
+/**
+ * Get current time in ms
+ */
 auto now = []() -> int {
     return std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch()
             ).count();
 };
-
 }
 
+/**
+ * Clock for keeping track of time
+ */
 class Clock {
     double _time_prev;
     double _time_now;

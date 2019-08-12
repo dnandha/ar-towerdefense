@@ -8,8 +8,8 @@
 
 
 /**
- * Level/GameState/Scene
- * Uses Singleton pattern
+ * Scene holds all entities to be renderered, event aware
+ * (Singleton pattern)
  */
 class Scene : 
     public EventHandler<MarkersDetectedEvent>
@@ -47,7 +47,7 @@ public:
       _registration->RemoveHandler();
   }
 
-  // todo: somehow merge with other update/render methods
+  // todo: somehow merge with other update/render methods?
   void Update(double delta);
   void Render(Renderer* renderer);
 
@@ -67,6 +67,9 @@ public:
     return _entities;
   }
 
+  /**
+   * Return entities of type T
+   */
   template <class T>
   std::list<T*> GetEntities() {
     std::list<T*> matches;
