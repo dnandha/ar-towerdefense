@@ -13,12 +13,15 @@ using namespace cv;
  */
 class Renderer {
   Mat m_K;
+  Mat m_Dist;
   Ptr<ovis::WindowScene> m_winscene;
   Vec3d m_vrot;
   Mat m_bgimage;
 
   public:
     Renderer(std::vector<int> size, std::list<std::string> resources);
+    
+    void SetCamera(Mat K, Mat Dist) { m_K = K; m_Dist = Dist; }
 
     void AddEntity(const std::string& name,
                 const std::string& meshname);
@@ -28,8 +31,11 @@ class Renderer {
 
     void RemoveEntity(const std::string& name);
 
+    void SetEntityScale(const std::string& name, float scale);
+
     void SetEntityPosition(const std::string& name, Vec3d pos);
     void SetEntityPosition(const std::string& name, Vec3d pos, Vec3d rot);
+    void SetEntityLookAt(const std::string& name, Vec3d pos);
 
     void PlayEntityAnimation(const std::string& name,
                        const std::string& animname);
@@ -49,7 +55,7 @@ class Renderer {
      */
     void UpdateBackground(Mat bgimg, bool show = true);
 	
-	void DrawLine(const Mat& image, const std::string& towName, const std::string& unitName, const Vec3d& tvec, const Vec3d& rvec);
+	void DrawLine(const Vec3d& tower_tvec, const Vec3d& unit_tvec);
 
     /**
      * Shows a Text. Overloaded. This one shows the text at the given position(coord system starts in upper left corner).

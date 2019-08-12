@@ -51,6 +51,14 @@ void Renderer::SetEntityPosition(const std::string& name, Vec3d pos, Vec3d rot) 
     m_winscene->setEntityPose(name, pos, rot);
 }
 
+void Renderer::SetEntityLookAt(const std::string& name, Vec3d pos) {
+    m_winscene->setEntityLookAt(name, "", pos);
+}
+
+void Renderer::SetEntityScale(const std::string& name, float scale) {
+    m_winscene->setEntityProperty(name, 1, Vec3d(scale, scale, scale));
+}
+
 void Renderer::PlayEntityAnimation(const std::string& name, const std::string& animname) {
     m_winscene->playEntityAnimation(name, animname);
 }
@@ -74,31 +82,15 @@ void Renderer::UpdateBackground(Mat bgimage, bool show) {
 }
 
 //Draws Line between a Tower and an ogreentity. Needs camerapose
-void Renderer::DrawLine(const Mat& image, const std::string& towName, const std::string& unitName, const Vec3d& tvec, const Vec3d& rvec) {
-	//Position Tower;
-	Vec3d posT;
-	Vec3d rotT;
-	m_winscene->getEntityPose(towName, rotT, posT);
-	//Position Enemy;
-	Vec3d posU;
-	Vec3d rotU;
-	m_winscene->getEntityPose(unitName, rotU, posU);
-
-	Point3d posTcv;
-	Point3d posUcv;
-	posTcv.x = posT[0];
-	posTcv.y = posT[1];
-	posTcv.z = posT[2];
-	posUcv.x = posU[0];
-	posUcv.y = posU[1];
-	posUcv.z = posU[2];
+void Renderer::DrawLine(const Vec3d& tower_tvec, const Vec3d& unit_tvec) {
 	std::vector<Point3d> pointList;
-	pointList.push_back(posTcv);
-	pointList.push_back(posUcv);
-	std::vector<Point2d> out2Dpts;
-	//projectPoints(pointList, rvec, tvec, camMatrix, distCoeffs, out2Dpts);
+	pointList.push_back(tower_tvec);
+	pointList.push_back(unit_tvec);
 
-	line(image, out2Dpts[0], out2Dpts[1], Scalar(0, 0, 255), 3);
+	std::vector<Point2d> out2Dpts;
+	projectPoints(pointList, Vec3d(0,0,0), Vec3d(0,0,0), m_K, m_Dist, out2Dpts);
+
+	line(m_bgimage, out2Dpts[0], out2Dpts[1], Scalar(0, 0, 255), 3);
 }
 
 void Renderer::ShowText(const String& text, const Point& pos, bool centered) {

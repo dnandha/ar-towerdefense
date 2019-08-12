@@ -56,6 +56,9 @@ class MarkerDetection {
  public:
   MarkerDetection() { _imgproc = ImageProcessor(); }
 
+  Mat GetCamMatrix() { return _imgproc.GetCamMatrix(); }
+  Mat GetDistCoeffs() { return _imgproc.GetDistCoeffs(); }
+
   void Detect(Mat img);
 };
 

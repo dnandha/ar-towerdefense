@@ -33,6 +33,9 @@ int main(int argc, char** argv) {
     MarkerDetection detector;
     Cam cam(webcamId);
 
+    // set camera instrinsics in renderer
+    renderer.SetCamera(detector.GetCamMatrix(), detector.GetDistCoeffs());
+
     // path finding
     PathsInitializer initializer(cam);
     std::vector<std::vector<cv::Point2f>> paths = initializer.InitializePaths();

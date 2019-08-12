@@ -13,6 +13,7 @@ class Unit : public Entity
   float _damagetaken = 0.0;
   int _i_pos = 0; // counter for pathfinding position
   bool _mark_removed = false; // todo: not needed if unit truly removed upon death
+  Vec3d _lookat;
 
 public:
   float walkspeed = 2.0; // pixels per ms
@@ -25,6 +26,9 @@ public:
   //void Stop();
   //void LookAt(Position lookAt);
   //
+
+  void SetLookAt(Vec3d pos) { _lookat = pos; }
+  Vec3d GetLookAt() { return _lookat; }
 
   void Kill();
 
