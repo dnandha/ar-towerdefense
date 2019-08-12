@@ -1,9 +1,7 @@
 #include <opencv2/calib3d.hpp>
 #include <opencv2/ovis.hpp>
 #include <opencv2/imgproc.hpp>
-//Für DrawLine. Funzt so aber nicht
-//#include "unit.h"
-//#include "tower.h"
+
 
 #include <list>
 #include <vector>
@@ -50,6 +48,8 @@ class Renderer {
      * Draw image in scene background
      */
     void UpdateBackground(Mat bgimg);
+	
+	void DrawLine(const Mat& image, const std::string& towName, const std::string& unitName, const Vec3d& tvec, const Vec3d& rvec);
 
 	void ShowText(const Mat& image, const String& text);
 
