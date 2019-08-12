@@ -9,12 +9,17 @@ void Unit::Kill() {
 
 void Unit::Update(double delta) {
   if (this->IsDead()) {
+
       // send to valhalla // todo
       this->SetPosition(Vec3d(500.0, 500.0, 500.0));
 
-      // give player points
-      GameEvent e(GameEvent::EventType::PlayerScore);
-      EventBus::FireEvent(e);
+      if (!_mark_removed) { // todo
+          _mark_removed = true;
+
+          // give player points once
+          GameEvent e(GameEvent::EventType::PlayerScore);
+          EventBus::FireEvent(e);
+      }
   } else if (this->HasJustSpawned()) {
       this->SetPosition(_pf->GetPoint(0), _pf->GetRotation());
       _i_pos++;
@@ -42,7 +47,7 @@ void Unit::Update(double delta) {
 void Unit::Render(Renderer* renderer) {
     if(!on_screen) {
         std::cout << "adding: " << this->GetName() << std::endl;
-        renderer->AddEntity(this->GetName(), this->GetMeshName(), Vec3d(1.3, -1.3, 0.0));
+        renderer->AddEntity(this->GetName(), this->GetMeshName(), Vec3d(1.3, 0.0, 0.0));
         renderer->PlayEntityAnimation(this->GetName(), "RunBase");
         renderer->PlayEntityAnimation(this->GetName(), "RunTop");
         on_screen = true;

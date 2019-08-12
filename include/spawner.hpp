@@ -12,7 +12,7 @@
 template <class T>
 class Spawner : public Entity
 {
-    int _counter;
+    int _counter; // total spawned count
     double _time;
     bool _running;
     double _interval; // in seconds

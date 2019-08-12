@@ -16,9 +16,6 @@ class Player
   int _score;
   const char *_name;
 
-protected:
-  bool IsDead() {return _lives == 0;}
-
 public:
   Player(const char *name, int lives = 10) : _name(name), _score(0), _lives(lives) {}
 
@@ -37,6 +34,8 @@ public:
     ss << "Player: " << _name;
     return ss.str();
   }
+
+  bool IsDead() {return _lives == 0;}
 
   void TakeHit() { _lives > 0 ? _lives-- : _lives = 0; }
   void ScorePlus() { _score++; }

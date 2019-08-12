@@ -10,6 +10,7 @@ float Tower::DistanceTo(Unit* unit) {
 }
 
 bool Tower::Hits(Unit* unit) {
+    std::cout << this->DistanceTo(unit) << std::endl;
     if (this->range < this->DistanceTo(unit))
         return true;
 

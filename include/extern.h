@@ -9,6 +9,11 @@
 #include "image_processor.h"
 
 
+struct CamPosition {
+    Vec3d tvec;
+    Vec3d rvec;
+};
+
 /**
  * Implements path finding from detection library
  * Holds the relative path but delivers the absolute points

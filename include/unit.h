@@ -12,10 +12,11 @@ class Unit : public Entity
 
   float _damagetaken = 0.0;
   int _i_pos = 0; // counter for pathfinding position
+  bool _mark_removed = false; // todo: not needed if unit truly removed upon death
 
 public:
   float walkspeed = 2.0; // pixels per ms
-  float hitpoints = 10000;
+  float hitpoints = 100;
 
   Unit(int id, const std::string& name, const std::string& meshname, AbsolutePath* pf) :
     Entity(id, name, meshname), _pf(pf) {}
