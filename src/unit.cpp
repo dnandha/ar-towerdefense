@@ -74,6 +74,7 @@ void Unit::Render(Renderer* renderer) {
 
   renderer->SetEntityPosition(this->GetName(), this->GetPosition(),
                               this->GetRotation());
+  renderer->SetEntityLookAt(this->GetName(), this->GetLookAt());
   if (this->IsDead()) {
     renderer->StopEntityAnimation(this->GetName(), "RunBase");
     renderer->StopEntityAnimation(this->GetName(), "RunTop");
