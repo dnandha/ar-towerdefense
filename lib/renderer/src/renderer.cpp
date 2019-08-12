@@ -73,28 +73,32 @@ void Renderer::UpdateBackground(Mat bgimage) {
 }
 
 //Draws Line between a Tower and an ogreentity. Needs camerapose
-//void Renderer::DrawLine(const Mat& image, Tower& tow, Unit& enemy, const Vec3d& tvec, const Vec3d& rvec) {
-	//Position Tower
-	//Position posT = tow.GetPosition();
-	//Position Enemy
-	//Position posE = enemy.GetPosition();
+void Renderer::DrawLine(const Mat& image, const std::string& towName, const std::string& unitName, const Vec3d& tvec, const Vec3d& rvec) {
+	//Position Tower;
+	Vec3d posT;
+	Vec3d rotT;
+	m_winscene->getEntityPose(towName, rotT, posT);
+	//Position Enemy;
+	Vec3d posU;
+	Vec3d rotU;
+	m_winscene->getEntityPose(unitName, rotU, posU);
 
-	//Point3d posTcv;
-	//Point3d posEcv;
-	//posTcv.x = posT[0];
-	//posTcv.y = posT[1];
-	//posTcv.z = posT[2];
-	//posEcv.x = posE[0];
-	//posEcv.y = posE[1];
-	//posEcv.z = posE[2];
-	//std::vector<Point3d> pointList;
-	//pointList.push_back(posTcv);
-	//pointList.push_back(posEcv);
-	//std::vector<Point2d> out2Dpts;
-	//projectPoints(pointList, rvec, tvec, camMatrix2, distCoeffs2, out2Dpts);
+	Point3d posTcv;
+	Point3d posUcv;
+	posTcv.x = posT[0];
+	posTcv.y = posT[1];
+	posTcv.z = posT[2];
+	posUcv.x = posU[0];
+	posUcv.y = posU[1];
+	posUcv.z = posU[2];
+	std::vector<Point3d> pointList;
+	pointList.push_back(posTcv);
+	pointList.push_back(posUcv);
+	std::vector<Point2d> out2Dpts;
+	projectPoints(pointList, rvec, tvec, camMatrix2, distCoeffs2, out2Dpts);
 
-	//line(image, out2Dpts[0], out2Dpts[1], Scalar(0, 0, 255));
-//}
+	line(image, out2Dpts[0], out2Dpts[1], Scalar(0, 0, 255), 3);
+}
 
 void Renderer::ShowText(const String& text, const Point& pos) {
 	Size textSize = getTextSize(text, FONT_HERSHEY_SIMPLEX, 1, 2, 0);
