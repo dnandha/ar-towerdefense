@@ -5,8 +5,8 @@
 
 #include "image_processor.h"
 
-/*
- *
+/**
+ * Base Event
  */
 class Event {
  public:
@@ -22,18 +22,26 @@ class Event {
   bool _canceled;
 };
 
-enum GameEventType {
-    PlayerHit,
-    PlayerScore
-};
-
+/**
+ * Game events
+ */
 class GameEvent : public Event {
-  GameEventType _t;    
  public:
-  GameEvent(GameEventType t) : _t(t) {}
-  GameEventType GetType() { return _t; }
+    enum EventType {
+        PlayerHit,
+        PlayerScore
+    };
+
+  GameEvent(GameEvent::EventType t) : _t(t) {}
+  GameEvent::EventType GetType() { return _t; }
+
+  private:
+    GameEvent::EventType _t;    
 };
 
+/**
+ * Event containing marker information
+ */
 class MarkersDetectedEvent : public Event {
   Marker _m;
 
@@ -42,6 +50,9 @@ class MarkersDetectedEvent : public Event {
   Marker GetMarker() { return _m; }
 };
 
+/**
+ * Event to inform system to remove unit
+ */
 class UnitKilledEvent : public Event {
   std::string _name;
 
@@ -50,6 +61,9 @@ class UnitKilledEvent : public Event {
   std::string GetName() { return _name; }
 };
 
+/**
+ * Event used for projection / mapping
+ */
 class HomographyComputedEvent : public Event {
   cv::Mat _homography;
   cv::Mat _camMat;

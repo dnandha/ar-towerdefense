@@ -1,22 +1,13 @@
 #ifndef _CAM_H
 #define _CAM_H
 
-/*
- *
- *
- *
- *
- *
- *
- */
-
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
 using namespace std;
 
-/*
- *
+/**
+ * Webcam class
  */
 class Cam {
  private:

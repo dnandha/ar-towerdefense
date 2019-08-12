@@ -4,8 +4,7 @@
 #include "entity.h"
 
 /**
- * Describes the walking path of a unit
- * todo: put in another file or makunit
+ * Describes general game unit/mob
  */
 class Unit : public Entity
 {
@@ -40,7 +39,7 @@ public:
 
 // SPECIFIC UNITS
 /**
- * Basic mob to grind
+ * Basic mob to grind xp
  */
 struct MobSinbad : public Unit {
     MobSinbad(const std::string& name, AbsolutePath* pf) :

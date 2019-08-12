@@ -12,18 +12,8 @@
 #include <iostream>
 #include <ctime>
 
-/*
- * Init Game
- */
-void initialize() {
-  // init cv
-  // init pathfinding
-  // generate path
-  // load meshes
-}
-
-/*
- * Main
+/**
+ * Main Loop
  */
 int main() {
     // create rendering window
@@ -59,21 +49,25 @@ int main() {
 
     double delta;
     // enter game loop
-    while (game.state != State::Ended && renderer.WaitKey(1) != 27 && cam.Grab()) {
-        if (game.state == State::Paused)
-            continue;
+    while (game.state != GameBase::State::Ended
+            && renderer.WaitKey(1) != 27
+            && cam.Grab()) {
 
         delta = Clock::GetInstance().Tick();
+
         // get frame
         Mat img = cam.GetFrame();
         renderer.UpdateBackground(img); // todo: put into scene::update?
-        // detect markers
-        detector.Detect(img);
-        // update and render scene
-        Scene::GetInstance().Update(delta);
-        Scene::GetInstance().Render(&renderer);
-        // draw ui
-        ui.Render(&renderer);
+
+        if (game.state != GameBase::State::Paused) {
+            // detect markers
+            detector.Detect(img);
+            // update and render scene
+            Scene::GetInstance().Update(delta);
+            Scene::GetInstance().Render(&renderer);
+            // draw ui
+            ui.Render(&renderer);
+        }
     }
 
     return 1;

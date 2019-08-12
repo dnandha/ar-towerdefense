@@ -5,7 +5,7 @@
 #include "extern.h"
 
 /**
- * Abstract class which represents game entity
+ * Abstract class representing game entity
  */
 class Entity
 {

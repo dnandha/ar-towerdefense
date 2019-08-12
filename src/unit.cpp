@@ -13,7 +13,7 @@ void Unit::Update(double delta) {
       this->SetPosition(Vec3d(500.0, 500.0, 500.0));
 
       // give player points
-      GameEvent e(GameEventType::PlayerScore);
+      GameEvent e(GameEvent::EventType::PlayerScore);
       EventBus::FireEvent(e);
   } else if (this->HasJustSpawned()) {
       this->SetPosition(_pf->GetPoint(0), _pf->GetRotation());
@@ -23,7 +23,7 @@ void Unit::Update(double delta) {
       this->SetPosition(Vec3d(500.0, 500.0, 500.0));
 
       // hurt player
-      GameEvent e(GameEventType::PlayerHit);
+      GameEvent e(GameEvent::EventType::PlayerHit);
       EventBus::FireEvent(e);
   } else {
     // get position from pathfinding

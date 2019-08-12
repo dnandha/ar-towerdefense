@@ -10,6 +10,9 @@
 
 using namespace cv;
 
+/**
+ * Component for rendering scene using Ovis (OpenCV module)
+ */
 class Renderer {
   Mat m_K;
   Ptr<ovis::WindowScene> m_winscene;
@@ -38,8 +41,14 @@ class Renderer {
 
 	void getScreenshot(const Mat& out);
 	
+    /**
+     * Update camera positioning
+     */
     void UpdateView(Vec3d tvec, Vec3d rvec);
 
+    /** 
+     * Draw image in scene background
+     */
     void UpdateBackground(Mat bgimg);
 
 	void ShowText(const Mat& image, const String& text);
@@ -47,7 +56,7 @@ class Renderer {
     /**
      * Shows a Text. Overloaded. This one shows the text at the given position(coord system starts in upper left corner).
      * The point specifies the lower left corner/origin of the string
-     **/
+     */
 	void ShowText(const String& text, const Point& pos);
 
     int WaitKey(double time);

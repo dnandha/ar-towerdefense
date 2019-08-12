@@ -6,7 +6,6 @@
 
 #include <iostream>
 
-// todo: move spawner into own header file
 /**
  * Unit spawner
  */
@@ -21,7 +20,6 @@ class Spawner : public Entity
     std::vector<AbsolutePath*> _paths;
 
 public:
-
     Spawner(double interval = 3.0, Vec3d position = Vec3d(0.0, 0.0, 0.0)) : 
         Entity(200, "spawner", "Sinbad.mesh"),
         _interval(interval), _pos(position),
@@ -40,6 +38,9 @@ public:
     void Update(double delta);
 };
 
+/**
+ * Spawn units on update
+ */
 template<class T>
 void Spawner<T>::Update(double delta) {
     if (!_running)

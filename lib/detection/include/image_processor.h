@@ -1,15 +1,6 @@
 #ifndef _IMAGE_PROCESSOR_H
 #define _IMAGE_PROCESSOR_H
 
-/*
- *
- *
- *
- *
- *
- *
- */
-
 #include <Eigen/Dense>
 #include <algorithm>
 #include <opencv2/aruco.hpp>
@@ -19,7 +10,7 @@
 using namespace Eigen;
 using namespace std;
 
-/*
+/**
  *  Casts CV vectors
  */
 template <typename I, typename O>
@@ -33,7 +24,7 @@ static vector<O> CastVector(vector<I> inputVector) {
   return outputVector;
 }
 
-/*
+/**
  * Enum for Marker IDs
  */
 enum MarkerCategory {
@@ -49,7 +40,7 @@ enum MarkerCategory {
   Cursor4 = 9
 };
 
-/*
+/**
  * Aruco marker
  */
 struct Marker {
@@ -59,8 +50,8 @@ struct Marker {
   cv::Vec3d rvec;
 };
 
-/*
- *
+/**
+ * Main class for image processing / marker detection
  */
 class ImageProcessor {
  public:
@@ -76,7 +67,8 @@ class ImageProcessor {
   cv::Mat GetHomography();
 
  private:
-  cv::Mat _camMatrix, _distCoeffs;
+  cv::Mat _camMatrix;
+  cv::Mat _distCoeffs;
   cv::Ptr<cv::aruco::Dictionary> _dictionary;
   cv::Ptr<cv::aruco::DetectorParameters> _detectorParams;
   float _markerLength;

@@ -34,6 +34,9 @@ struct FringeElement {
   DirectedEdge edge;
 };
 
+/**
+ * Find path using A* algorithm
+ */
 class PathFinder {
  public:
   PathFinder(std::vector<Polygon> polygons, std::vector<Vertex> vertices);
