@@ -36,6 +36,7 @@ void Tower::Render(Renderer* renderer) {
     if(!on_screen) {
         std::cout << "adding: " << this->GetName() << std::endl;
         renderer->AddEntity(this->GetName(), this->GetMeshName());
+        renderer->SetEntityScale(this->GetName(), this->GetScale());
         on_screen = true;
     }
     for (Unit* unit : Scene::GetInstance().GetEntities<Unit>()) {
@@ -45,7 +46,7 @@ void Tower::Render(Renderer* renderer) {
         }
     }
 
-    renderer->SetEntityPosition(this->GetName(), this->GetPosition(), Vec3d(1.3, 0.0, 0.0));//this->GetRotation());
+    renderer->SetEntityPosition(this->GetName(), this->GetPosition(), this->GetRotation());
     //std::cout << this->GetPosition() << std::endl;
   // render projectile
 }

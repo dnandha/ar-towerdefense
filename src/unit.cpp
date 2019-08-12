@@ -38,6 +38,7 @@ void Unit::Update(double delta) {
         if (norm(dir) > 1.0) {
             pos += dir * this->walkspeed * delta;
             this->SetPosition(pos);
+            this->SetLookAt(_pf->GetPoint(_i_pos));
             break;
         }
     }
@@ -47,13 +48,16 @@ void Unit::Update(double delta) {
 void Unit::Render(Renderer* renderer) {
     if(!on_screen) {
         std::cout << "adding: " << this->GetName() << std::endl;
-        renderer->AddEntity(this->GetName(), this->GetMeshName(), Vec3d(1.3, 0.0, 0.0));
+        renderer->AddEntity(this->GetName(), this->GetMeshName(), this->GetRotation());
+        renderer->SetEntityScale(this->GetName(), this->GetScale());
         renderer->PlayEntityAnimation(this->GetName(), "RunBase");
         renderer->PlayEntityAnimation(this->GetName(), "RunTop");
         on_screen = true;
     }
 
     renderer->SetEntityPosition(this->GetName(), this->GetPosition(), this->GetRotation());
+    renderer->SetEntityLookAt(this->GetName(), this->GetLookAt());
+
     if (this->IsDead()) {
         renderer->StopEntityAnimation(this->GetName(), "RunBase");
         renderer->StopEntityAnimation(this->GetName(), "RunTop");

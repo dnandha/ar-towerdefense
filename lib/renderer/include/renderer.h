@@ -31,8 +31,11 @@ class Renderer {
 
     void RemoveEntity(const std::string& name);
 
+    void SetEntityScale(const std::string& name, float scale);
+
     void SetEntityPosition(const std::string& name, Vec3d pos);
     void SetEntityPosition(const std::string& name, Vec3d pos, Vec3d rot);
+    void SetEntityLookAt(const std::string& name, Vec3d pos);
 
     void PlayEntityAnimation(const std::string& name,
                        const std::string& animname);

@@ -51,6 +51,14 @@ void Renderer::SetEntityPosition(const std::string& name, Vec3d pos, Vec3d rot) 
     m_winscene->setEntityPose(name, pos, rot);
 }
 
+void Renderer::SetEntityLookAt(const std::string& name, Vec3d pos) {
+    m_winscene->setEntityLookAt(name, "", pos);
+}
+
+void Renderer::SetEntityScale(const std::string& name, float scale) {
+    m_winscene->setEntityProperty(name, 1, Vec3d(scale, scale, scale));
+}
+
 void Renderer::PlayEntityAnimation(const std::string& name, const std::string& animname) {
     m_winscene->playEntityAnimation(name, animname);
 }

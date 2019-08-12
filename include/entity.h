@@ -15,6 +15,7 @@ protected:
   std::string _meshname;
   Vec3d _pos;
   Vec3d _rot;
+  float _scale;
 
 public:
   bool on_screen;
@@ -29,8 +30,12 @@ public:
   void SetPosition(Vec3d pos) { _pos = pos; }
   void SetPosition(Vec3d pos, Vec3d rot) { _pos = pos; _rot = rot; }
   void SetRotation(Vec3d rot) { _rot = rot; }
+  void SetScale(float scale) { _scale = scale; }
+
   Vec3d GetPosition() { return _pos; }
   Vec3d GetRotation() { return _rot; }
+  float GetScale() { return _scale; }
+
 
   // each entity should be able to update and render itself (visitor pattern)
   virtual void Update(double delta) {};
