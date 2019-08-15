@@ -1,5 +1,4 @@
-
-/**
+/*
 * ARTD (Augmented Reality Tower Defense)
 * Copyright (C) 2019 Jaeger,Stegmueller,Boche,Nandha 
 * 
