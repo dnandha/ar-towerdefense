@@ -1,20 +1,20 @@
 /**
-* ARTD (Augmented Reality Tower Defense)
-* Copyright (C) 2019 Jaeger,Stegmueller,Boche,Nandha 
-* 
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-* 
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-* 
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ * ARTD (Augmented Reality Tower Defense)
+ * Copyright (C) 2019 Jaeger,Stegmueller,Boche,Nandha
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "path_detector.h"
 
@@ -52,12 +52,9 @@ std::vector<cv::Point2f> PathDetector::DrawHoughLines(cv::Mat frame,
                                                       double maxLineGap) {
   cv::Mat help = frame.clone();
   // Canny-> HoughLines
-
+  cvtColor(frame, help, cv::COLOR_BGR2GRAY);
+  inRange(help, cv::Scalar(0, 0, 0), cv::Scalar(100, 100, 100), help);
   Canny(help, frame, 50, 200, 3);
-
-  cvtColor(frame, help, cv::COLOR_GRAY2BGR);
-
-  //#if 0
 
   std::vector<cv::Point2f> corners;
   std::vector<cv::Vec4i> lines;
@@ -67,13 +64,9 @@ std::vector<cv::Point2f> PathDetector::DrawHoughLines(cv::Mat frame,
 
   for (size_t i = 0; i < lines.size(); i++) {
     cv::Vec4i l = lines[i];
-    line(help, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]),
-         cv::Scalar(0, 0, 255), 3);
     corners.push_back({(float)l[0], (float)l[1]});
     corners.push_back({(float)l[2], (float)l[3]});
   }
-  imshow("Hough", help);
-  frame = help.clone();
 
   return corners;
 }

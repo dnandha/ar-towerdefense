@@ -1,27 +1,28 @@
 /**
-* ARTD (Augmented Reality Tower Defense)
-* Copyright (C) 2019 Jaeger,Stegmueller,Boche,Nandha 
-* 
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-* 
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-* 
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ * ARTD (Augmented Reality Tower Defense)
+ * Copyright (C) 2019 Jaeger,Stegmueller,Boche,Nandha
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "paths_initializer.h"
 
 std::vector<std::vector<cv::Point2f>> PathsInitializer::InitializePaths() {
   ImageProcessor improc;
-
+  bool houghLines = false;
   bool pathFound = false;
+  int houghCounter = 0;
 
   while (_cam.Grab()) {
     cv::Mat image = _cam.GetFrame();
@@ -35,8 +36,14 @@ std::vector<std::vector<cv::Point2f>> PathsInitializer::InitializePaths() {
           improc.WarpPaperImage(image, markers, 900, 600);
 
       if (!pathFound) {
-        if (DetectPaths(warpedPaperImage)) {
+        if (DetectPaths(warpedPaperImage, houghLines)) {
           pathFound = true;
+        } else {
+          houghCounter++;
+          if (houghCounter == 100) {
+            houghLines = true;
+            houghCounter == 0;
+          }
         }
       }
     }
@@ -52,14 +59,19 @@ std::vector<std::vector<cv::Point2f>> PathsInitializer::InitializePaths() {
           cv::destroyWindow("path");
           break;
         }
+        if (marker.category == DetectionSwitch) {
+          pathFound = false;
+          cv::destroyWindow("path");
+          houghLines = !houghLines;
+          break;
+        }
       }
     }
   }
-
   cout << "Cant grab _camera image";
 }
 
-bool PathsInitializer::DetectPaths(cv::Mat frame) {
+bool PathsInitializer::DetectPaths(cv::Mat frame, bool houghLines) {
   double range = 25;
   int maxCorners = 1000;
   double qualityLevel = 0.001;
@@ -69,8 +81,12 @@ bool PathsInitializer::DetectPaths(cv::Mat frame) {
 
   std::vector<cv::Point2f> pathCorners;
   PathDetector detector;
-  pathCorners = detector.Cornerdetection(frame, range, maxCorners, qualityLevel,
-                                         blockSize, useHarris, k);
+  if (!houghLines) {
+    pathCorners = detector.Cornerdetection(
+        frame, range, maxCorners, qualityLevel, blockSize, useHarris, k);
+  } else {
+    pathCorners = detector.DrawHoughLines(frame);
+  }
 
   if (pathCorners.size() > 2) {
     Mesh mesh(pathCorners);

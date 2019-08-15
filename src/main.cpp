@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
         webcamId = atoi(argv[1]);
 
     // create rendering window
-    WinSize winsize = {800, 600};
+    WinSize winsize = {1280, 720};
     Renderer renderer(winsize, {"packs/Sinbad.zip", "packs/tower.zip"});
 
     // create game objects
