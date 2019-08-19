@@ -5,6 +5,7 @@ Classical tower defense game played on a sheet of paper with markers
 ## Requirements
 * OpenCV 4 build with extra modules `Ovis` and `Aruco`
 * Ogre 1.12
+* [Medieval Tower Model](https://drive.google.com/file/d/1TdF3gOXMibaZtj_1nFYwMdPQfBHbreWG/view?usp=sharing) (put into ogre media packs directory)
 
 ## Build
 1. `git clone https://github.com/dnandha/ar-towerdefense`
